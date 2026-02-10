@@ -1132,11 +1132,9 @@
 				"festival": true
 			},
 			{
-  "day": 17,
-  "name": "Wizard",
-  "birthday": true
-}
-,
+				"day": 17,
+				"name": "Wizard"
+			},
 			{
 				"day": 20,
 				"name": "Evelyn"
