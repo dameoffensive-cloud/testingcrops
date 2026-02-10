@@ -199,27 +199,11 @@
 /* --- Multi-event stacking (festivals + birthdays on same day) --- */
 #calendar .day_container .day .date_top{
   position: relative !important;
-  top: auto !important;
-  left: auto !important;
   height: auto !important;
-  min-height: 26px;
   overflow: visible !important;
 }
-
 #calendar .day_container .day .date_top .event{
   position: relative !important;
-  top: auto !important;
-  left: 30px !important;
-  right: auto !important;
   display: block;
-  line-height: 14px;
   margin-top: 2px;
 }
-
-/* keep the day number pinned top-left even as date_top grows */
-#calendar .day_container .day .date_top .date{
-  position: absolute;
-  top: 0;
-  left: 4px;
-}
-
