@@ -197,31 +197,26 @@
 
 
 /* --- Multi-event stacking (festivals + birthdays on same day) --- */
-#calendar .day_container .day .date_top{
-  position: relative !important;
-  height: auto !important;
-  overflow: visible !important;
-}
-#calendar .day_container .day .date_top .event{
-  position: relative !important;
-  display: block;
-  margin-top: 2px;
-}
+#calendar .day_container 
 
-/* --- Fix: prevent crop sprites from covering the day number/date --- */
+/* FIX: keep date header above sprites and reserve space */
+
+#calendar .day_container .day{
+  padding-top: 31px !important;
+}
 #calendar .day_container .day .date_top{
-  position: relative !important;
-  z-index: 3;
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 31px !important;
+  overflow: hidden;
+  z-index: 10;
   background-color: #FBEBC2;
 }
 #calendar .day_container .day .date_top .date{
-  z-index: 4;
-}
-/* keep content below the header when date_top uses absolutely-positioned children */
-#calendar .day_container .day{
-  padding-top: 30px;
-}
-@media only screen and (max-width: 767px){
-  /* mobile already reserves header space */
-  #calendar .day_container .day{ padding-top: 30px !important; }
+  position: absolute;
+  top: 0;
+  left: 4px;
+  z-index: 11;
 }
