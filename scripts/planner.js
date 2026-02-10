@@ -603,12 +603,11 @@ $scope.$apply();
 	
 	// Get current view image (for top-left button)
 	function view_image(){
-		if (self.cview == "all") return "images/all_farms.png";
-		if (self.cview == "farm") return "images/scarecrow.png";
-		if (self.cview == "greenhouse") return "images/greenhouse.png";
-		if (self.cview == "island") return "images/ginger_island.png";
-		return "images/scarecrow.png";
-	}
+        if (self.cview == "all") return "images/all_farms.png";
+        if (self.cview == "island") return "images/ginger_island.png";
+        if (self.cview == "greenhouse") return "images/greenhouse.png";
+        return "images/scarecrow.png";
+    }
 	// Get current view label
 	function view_label(){
 		if (self.cview == "all") return "all farms";
