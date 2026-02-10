@@ -207,3 +207,21 @@
   display: block;
   margin-top: 2px;
 }
+
+/* --- Fix: prevent crop sprites from covering the day number/date --- */
+#calendar .day_container .day .date_top{
+  position: relative !important;
+  z-index: 3;
+  background-color: #FBEBC2;
+}
+#calendar .day_container .day .date_top .date{
+  z-index: 4;
+}
+/* keep content below the header when date_top uses absolutely-positioned children */
+#calendar .day_container .day{
+  padding-top: 30px;
+}
+@media only screen and (max-width: 767px){
+  /* mobile already reserves header space */
+  #calendar .day_container .day{ padding-top: 30px !important; }
+}
