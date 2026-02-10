@@ -603,9 +603,10 @@ $scope.$apply();
 	
 	// Get current view image (for top-left button)
 	function view_image(){
-		if (self.cview == "island") return "images/ginger_island.png";
+		if (self.cview == "all") return "images/all_farms.png";
+		if (self.cview == "farm") return "images/scarecrow.png";
 		if (self.cview == "greenhouse") return "images/greenhouse.png";
-		// farm or all
+		if (self.cview == "island") return "images/ginger_island.png";
 		return "images/scarecrow.png";
 	}
 	// Get current view label
