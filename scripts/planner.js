@@ -352,7 +352,7 @@ $scope.$apply();
 				
 				// Initial harvest
 				var harvests = [];
-				harvests.push(new Harvest(plan, first_harvest));
+				harvests.push(new Harvest(plan, first_harvest, false, farm.year.index));
 				
 				// Regrowth harvests
 				if (crop.regrow){
@@ -360,7 +360,7 @@ $scope.$apply();
 					for (var i = 1; i <= regrowths; i++){
 						var regrow_date = first_harvest + (i * crop.regrow);
 						if (regrow_date > crop_end) break;
-						harvests.push(new Harvest(plan, regrow_date, true));
+						harvests.push(new Harvest(plan, regrow_date, true, farm.year.index));
 					}
 				}
 				
@@ -449,7 +449,7 @@ $scope.$apply();
 							if (h_global < year_start_global || h_global > year_end_global) continue;
 
 							var h_local = h_global - (cy * YEAR_DAYS);
-							var harvest = new Harvest(plan, h_local, (h > 0));
+							var harvest = new Harvest(plan, h_local, (h > 0), cy);
 
 							// Update harvests
 							if (!farm.harvests[h_local]) farm.harvests[h_local] = [];
@@ -1376,6 +1376,7 @@ function in_greenhouse(){
 					if (!planner.crops[plan.crop]) return; // Invalid crop
 					var plan_object = new Plan(plan, type == "greenhouse");
 					self.data[type].plans[date].push(plan_object);
+					plan_object.year_index = self.index;
 					plan_count++;
 				});
 			});
@@ -1416,6 +1417,9 @@ function in_greenhouse(){
 		newplan.location = planner.cmode;
 		var plan = new Plan(newplan.get_data(), planner.in_greenhouse());
 		plan.date = date;
+		plan.year_index = this.index;
+		plan.year_index = this.index;
+		plan.year_index = this.index;
 		this.farm().plans[date].push(plan);
 		
 		// Auto-replanting within current year
@@ -1502,7 +1506,7 @@ function in_greenhouse(){
 	/****************
 		Harvest class - represents crops harvested on a date
 	****************/
-	function Harvest(plan, date, is_regrowth){
+	function Harvest(plan, date, is_regrowth, harvest_year_index){
 		var self = this;
 		self.date = 0;
 		self.plan = {};
@@ -1529,8 +1533,42 @@ function in_greenhouse(){
 			self.yield.min = crop.harvest.min * plan.amount;
 			self.yield.max = (Math.min(crop.harvest.min + 1, crop.harvest.max + 1 + (planner.player.level / crop.harvest.level_increase))-1) * plan.amount;
 			
+
+
+			// Fruit tree behavior differs from crops:
+			// - No extra yield based on Farming level
+			// - Quality is determined by tree age (not random chance)
+			if (crop.tree){
+				self.yield.max = self.yield.min; // always fixed yield
+
+				// Determine fruit quality by tree age since maturity.
+				// 0=normal, 1=silver, 2=gold, 4=iridium
+				var globalPlant = (plan.year_index * YEAR_DAYS) + plan.date;
+				var hy = (typeof harvest_year_index === 'number') ? harvest_year_index : (plan.year_index || 0);
+					var globalNow = (hy * YEAR_DAYS) + date;
+				var matureDay = globalPlant + 28;
+				var yearsSinceMature = Math.floor(Math.max(0, globalNow - matureDay) / YEAR_DAYS);
+
+				var treeQuality = 0;
+				if (yearsSinceMature >= 3) treeQuality = 4;
+				else if (yearsSinceMature >= 2) treeQuality = 2;
+				else if (yearsSinceMature >= 1) treeQuality = 1;
+
+				// Fixed revenue: fruit trees do not use fertilizer-based quality chance.
+				var treeSell = crop.get_sell(treeQuality);
+				self.revenue.min = treeSell * self.yield.min;
+				self.revenue.max = self.revenue.min;
+				self.cost = 0; // planting cost is tracked on planting day
+
+				// Tiller profession still applies to fruit (raw produce).
+				if (planner.player.tiller){
+					self.revenue.min = Math.floor(self.revenue.min * 1.1);
+					self.revenue.max = self.revenue.min;
+				}
+			}
 			// Harvest revenue and costs
 			var q_mult = 0;
+			if (!crop.tree){
 			if (plan.fertilizer && !plan.fertilizer.is_none()){
 				switch (plan.fertilizer.id){
 					case "basic_fertilizer":
@@ -1568,6 +1606,8 @@ function in_greenhouse(){
 				self.revenue.max = Math.floor(self.revenue.max * 1.1);
 			}
 			
+			}
+
 			// Regrowth
 			if (is_regrowth){
 				self.is_regrowth = true;
@@ -1604,6 +1644,9 @@ function in_greenhouse(){
 	function Plan(data, in_greenhouse){
 		var self = this;
 		self.date;
+		self.year_index = 0; // which planner year this plan belongs to
+		self.year_index = 0; // which planner year this plan belongs to
+		self.year_index = 0; // which planner year this plan belongs to
 		self.crop_id;
 		self.crop = {};
 		self.amount = 1;
