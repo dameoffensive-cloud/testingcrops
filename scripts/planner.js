@@ -1374,6 +1374,16 @@ function in_greenhouse(){
 		if (!crop) return false;
 		if (!crop.tree && !crop.can_grow(date, false, planner.in_greenhouse())) return false;
 		newplan.crop = crop;
+
+		// Fruit tree rules: can be planted any season, never uses fertilizer or irrigated growth bonuses.
+		if (crop.tree){
+			newplan.irrigated = false;
+			if (!newplan.fertilizer || !newplan.fertilizer.id){
+				newplan.fertilizer = planner.fertilizer["none"];
+			} else {
+				newplan.fertilizer = planner.fertilizer[newplan.fertilizer.id] || planner.fertilizer["none"];
+			}
+		}
 		
 		// Amount to plant
 		newplan.amount = parseInt(newplan.amount || 0);
