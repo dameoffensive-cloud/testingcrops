@@ -508,7 +508,7 @@ $scope.$apply();
 	// Open crop planner modal
 	function open_plans(date){
 		self.planner_modal.modal();
-		self.cdate = parseInt(date, 10);
+		self.cdate = date;
 	}
 	
 	////////////////////////////////
@@ -562,8 +562,6 @@ $scope.$apply();
 
 	// Combined calendar helpers (farm + greenhouse/island)
 	function calendar_plans(date){
-		date = parseInt(date, 10);
-
 		if (!self.cyear) return [];
 		var a = (self.cyear.data.farm && self.cyear.data.farm.plans[date]) ? self.cyear.data.farm.plans[date] : [];
 		var b = (self.cyear.data.greenhouse && self.cyear.data.greenhouse.plans[date]) ? self.cyear.data.greenhouse.plans[date] : [];
@@ -576,8 +574,6 @@ $scope.$apply();
 	}
 
 	function calendar_harvests(date){
-		date = parseInt(date, 10);
-
 		if (!self.cyear) return [];
 		var a = (self.cyear.data.farm && self.cyear.data.farm.harvests[date]) ? self.cyear.data.farm.harvests[date] : [];
 		var b = (self.cyear.data.greenhouse && self.cyear.data.greenhouse.harvests[date]) ? self.cyear.data.greenhouse.harvests[date] : [];
@@ -597,79 +593,6 @@ $scope.$apply();
 		fin.profit.max = (a ? a.profit.max : 0) + (b ? b.profit.max : 0);
 		return fin;
 	}
-
-
-
-	/********************************
-		GAP SUGGESTIONS (Tier 1)
-	********************************/
-
-	self.gap_suggestions_after_last_harvest = gap_suggestions_after_last_harvest;
-
-	function gap_suggestions_after_last_harvest(date){
-		if (!self.cyear) return null;
-
-		date = parseInt(date, 10);
-		var harvests = calendar_harvests(date);
-		if (!harvests || !harvests.length) return null;
-
-		var target = harvests[harvests.length - 1];
-		if (!target || !target.plan || !target.crop) return null;
-
-		var plantDate = date;
-		var season = planner.get_season(plantDate);
-		if (!season) return null;
-
-		var seasonEnd = season.end;
-		var remainingDays = seasonEnd - plantDate;
-		if (remainingDays <= 0) return null;
-
-		var fertilizer = (target.plan && target.plan.fertilizer) ? target.plan.fertilizer : planner.fertilizer["none"];
-		var rate = 0;
-		if (fertilizer && fertilizer.growth_rate) rate += fertilizer.growth_rate;
-		if (planner.player && planner.player.agriculturist) rate += 0.1;
-
-		var fitsThisSeason = [];
-		var crossSeason = [];
-
-		$.each(planner.crops_list, function(_, crop){
-			if (!crop || crop.id == "mixed_seeds") return;
-
-			var in_greenhouse = (target.location == "greenhouse") ? true : (target.plan && target.plan.greenhouse ? true : false);
-			if (!crop.can_grow(plantDate, false, in_greenhouse)) return;
-
-			var remove_days = 0;
-			if (rate > 0) remove_days += Math.ceil(crop.grow * rate);
-			var adjustedDays = Math.max(1, crop.grow - remove_days);
-
-			var harvestDate = plantDate + adjustedDays;
-
-			var estYield = (crop.harvest && crop.harvest.min) ? crop.harvest.min : 1;
-			var estProfit = (crop.sell * estYield) - (crop.buy || 0);
-
-			if (harvestDate <= seasonEnd){
-				fitsThisSeason.push({name: crop.name, id: crop.id, days: adjustedDays, profit: estProfit});
-			} else if (crop.can_grow(harvestDate, false, in_greenhouse)){
-				var harvestSeason = planner.get_season(harvestDate);
-				crossSeason.push({name: crop.name, id: crop.id, days: adjustedDays, profit: estProfit, harvestSeason: harvestSeason ? harvestSeason.name : ""});
-			}
-		});
-
-		fitsThisSeason.sort(function(a,b){ return (b.profit||0) - (a.profit||0); });
-		crossSeason.sort(function(a,b){ return (b.profit||0) - (a.profit||0); });
-
-		fitsThisSeason = fitsThisSeason.slice(0, 6);
-		crossSeason = crossSeason.slice(0, 6);
-
-		return {
-			remainingDays: remainingDays,
-			fitsThisSeason: fitsThisSeason,
-			crossSeason: crossSeason,
-			contextCropName: target.crop.name,
-			contextLocationLabel: (target.plan && target.plan.get_location_label) ? target.plan.get_location_label() : (target.location || "Farm")
-		};
-	}
-
 
 	self.calendar_plans = calendar_plans;
 	self.calendar_harvests = calendar_harvests;
