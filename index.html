@@ -508,16 +508,7 @@
 					</div>
 					<div ng-show="!self.calendar_plans(self.cdate).length" class="text-muted"><i class="fa fa-tint"></i> No planting.<hr></div>
 					
-					
-					
-					<!-- force-evaluate harvests once per digest and store on scope -->
-					<div ng-show="((harvests = self.calendar_harvests(self.cdate)) && false)"></div>
-<div class="text-muted" style="margin:8px 0;">
-						<small>
-							Debug: cdate={{self.cdate}} | harvest_count={{harvests.length}} | view={{self.cview}}
-						</small>
-					</div>
-<div ng-show="harvests.length">
+					<div ng-show="self.calendar_harvests(self.cdate).length">
 						<div class="panel panel-default">
 							<div class="panel-heading">
 								<h3 class="panel-title"><i class="fa fa-pagelines"></i> Harvesting</h3>
@@ -534,7 +525,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										<tr class="crop" ng-repeat="harvest in harvests">
+										<tr class="crop" ng-repeat="harvest in self.calendar_harvests(self.cdate)">
 											<td width="1">
 												<img ng-src="{{harvest.crop.get_image()}}">
 											</td>
@@ -569,49 +560,10 @@
 										</tr>
 									</tbody>
 								</table>
-								<!-- Gap suggestions after the last harvest on this day -->
-								<div class="gap_suggestions panel panel-default" style="margin-top:10px;" 
-									ng-if="self.gap_suggestions_after_last_harvest(self.cdate)">
-									<div class="panel-heading">
-										<h4 class="panel-title" style="font-size:14px;">
-											<i class="fa fa-lightbulb-o"></i>
-											Gap suggestions ({{self.gap_suggestions_after_last_harvest(self.cdate).remainingDays}} day<span ng-if="self.gap_suggestions_after_last_harvest(self.cdate).remainingDays!=1">s</span> left in season)
-										</h4>
-									</div>
-									<div class="panel-body">
-										<div class="text-muted" style="margin-bottom:6px;">
-											After the last harvest of <b>{{self.gap_suggestions_after_last_harvest(self.cdate).contextCropName}}</b> ({{self.gap_suggestions_after_last_harvest(self.cdate).contextLocationLabel}})
-										</div>
-
-										<div ng-if="self.gap_suggestions_after_last_harvest(self.cdate).fitsThisSeason.length">
-											<b>Fits this season</b>
-											<ul style="margin:6px 0 10px 18px;">
-												<li ng-repeat="c in self.gap_suggestions_after_last_harvest(self.cdate).fitsThisSeason">
-													{{c.name}} — {{c.days}} day<span ng-if="c.days!=1">s</span>
-												</li>
-											</ul>
-										</div>
-
-										<div ng-if="self.gap_suggestions_after_last_harvest(self.cdate).crossSeason.length">
-											<b>Cross-season options</b>
-											<ul style="margin:6px 0 0 18px;">
-												<li ng-repeat="c in self.gap_suggestions_after_last_harvest(self.cdate).crossSeason">
-													{{c.name}} — {{c.days}} day<span ng-if="c.days!=1">s</span>
-													<span class="text-muted" ng-if="c.harvestSeason"> (harvest in {{c.harvestSeason}})</span>
-												</li>
-											</ul>
-										</div>
-
-										<div class="text-muted" ng-if="!self.gap_suggestions_after_last_harvest(self.cdate).fitsThisSeason.length && !self.gap_suggestions_after_last_harvest(self.cdate).crossSeason.length">
-											No crops found that fit the remaining window with your current speed settings.
-										</div>
-									</div>
-								</div>
-
 							</div>
 						</div>
 					</div>
-					<div ng-show="!harvests.length" class="text-muted"><i class="fa fa-pagelines"></i> No harvests.</div>
+					<div ng-show="!self.calendar_harvests(self.cdate).length" class="text-muted"><i class="fa fa-pagelines"></i> No harvests.</div>
 				</div>
 				<div class="modal-footer">
 					<div class="btn btn-default" data-dismiss="modal"><i class="fa fa-check"></i> Done</div>
