@@ -560,6 +560,45 @@
 										</tr>
 									</tbody>
 								</table>
+								<!-- Gap suggestions after the last auto-replant harvest on this day -->
+								<div class="gap_suggestions panel panel-default" style="margin-top:10px;" 
+									ng-if="self.gap_suggestions_after_last_auto_harvest(self.cdate)">
+									<div class="panel-heading">
+										<h4 class="panel-title" style="font-size:14px;">
+											<i class="fa fa-lightbulb-o"></i>
+											Gap suggestions ({{self.gap_suggestions_after_last_auto_harvest(self.cdate).remainingDays}} day<span ng-if="self.gap_suggestions_after_last_auto_harvest(self.cdate).remainingDays!=1">s</span> left in season)
+										</h4>
+									</div>
+									<div class="panel-body">
+										<div class="text-muted" style="margin-bottom:6px;">
+											After the last auto-replant harvest of <b>{{self.gap_suggestions_after_last_auto_harvest(self.cdate).contextCropName}}</b> ({{self.gap_suggestions_after_last_auto_harvest(self.cdate).contextLocationLabel}})
+										</div>
+
+										<div ng-if="self.gap_suggestions_after_last_auto_harvest(self.cdate).fitsThisSeason.length">
+											<b>Fits this season</b>
+											<ul style="margin:6px 0 10px 18px;">
+												<li ng-repeat="c in self.gap_suggestions_after_last_auto_harvest(self.cdate).fitsThisSeason">
+													{{c.name}} — {{c.days}} day<span ng-if="c.days!=1">s</span>
+												</li>
+											</ul>
+										</div>
+
+										<div ng-if="self.gap_suggestions_after_last_auto_harvest(self.cdate).crossSeason.length">
+											<b>Cross-season options</b>
+											<ul style="margin:6px 0 0 18px;">
+												<li ng-repeat="c in self.gap_suggestions_after_last_auto_harvest(self.cdate).crossSeason">
+													{{c.name}} — {{c.days}} day<span ng-if="c.days!=1">s</span>
+													<span class="text-muted" ng-if="c.harvestSeason"> (harvest in {{c.harvestSeason}})</span>
+												</li>
+											</ul>
+										</div>
+
+										<div class="text-muted" ng-if="!self.gap_suggestions_after_last_auto_harvest(self.cdate).fitsThisSeason.length && !self.gap_suggestions_after_last_auto_harvest(self.cdate).crossSeason.length">
+											No crops found that fit the remaining window with your current speed settings.
+										</div>
+									</div>
+								</div>
+
 							</div>
 						</div>
 					</div>
