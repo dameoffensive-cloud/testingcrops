@@ -619,6 +619,9 @@ $scope.$apply();
 			if (!prev_year) return;
 			self.cyear = prev_year;
 		}
+		// Ensure the newly selected year is (re)computed so carry-over harvests render immediately
+		update(self.cyear.data.farm, true);
+		update(self.cyear.data.greenhouse, true);
 	}
 	
 	// Increment/decrement current season; creates new year if necessary
@@ -639,6 +642,9 @@ $scope.$apply();
 		}
 		
 		self.set_season(next_season);
+		// Ensure the newly selected year is (re)computed so carry-over harvests render immediately
+		update(self.cyear.data.farm, true);
+		update(self.cyear.data.greenhouse, true);
 	}
 	
 	// Set current season
@@ -720,12 +726,25 @@ function in_greenhouse(){
 		var idx = order.indexOf(self.cview);
 		if (idx < 0) idx = 0;
 		self.cview = order[(idx + 1) % order.length];
+		// Keep cmode in sync (cmode drives growth rules + which farm bucket is active)
+		if (self.cview == "farm" || self.cview == "all") self.cmode = "farm";
+		else if (self.cview == "island") self.cmode = "island";
+		else self.cmode = "greenhouse";
+		// Recompute current year so view updates immediately
+		update(self.cyear.data.farm, true);
+		update(self.cyear.data.greenhouse, true);
 	}
 
 	
 	// Set current farm mode
 	function set_mode(mode){
 		self.cmode = mode;
+		// Keep view consistent when set directly
+		if (mode == "farm") self.cview = "farm";
+		else if (mode == "greenhouse") self.cview = "greenhouse";
+		else if (mode == "island") self.cview = "island";
+		update(self.cyear.data.farm, true);
+		update(self.cyear.data.greenhouse, true);
 	}
 	
 	////////////////////////////////
