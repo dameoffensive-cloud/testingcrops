@@ -412,7 +412,6 @@ function planner_controller($scope){
 		self.stages = [];
 		self.regrow;
 		self.wild = false;
-		self.tree = false;
 		
 		// Harvest data
 		self.harvest = {
@@ -451,7 +450,6 @@ function planner_controller($scope){
 			self.stages = data.stages;
 			self.regrow = data.regrow;
 			if (data.wild) self.wild = true;
-			if (data.tree) self.tree = true;
 			
 			// Harvest data
 			if (data.harvest.min) self.harvest.min = data.harvest.min;
@@ -664,10 +662,14 @@ function planner_controller($scope){
 		
 		function get_grow_time(){
 			var stages = $.extend([], self.crop.stages);
-
-			// Fruit trees: ignore fertilizer speed-ups.
-			if (self.crop && self.crop.tree) return self.crop.grow;
 			
+			// Fruit trees ignore Speed-Gro effects
+			if (self.crop && self.crop.tree){
+				var total = 0;
+				for (var ti = 0; ti < stages.length; ti++) total += stages[ti];
+				return total;
+			}
+
 			if (self.fertilizer.id == "speed_gro" || self.fertilizer.id == "delux_speed_gro" || planner.player.agriculturist){
 				// [SOURCE: StardewValley.TerrainFeatures/HoeDirt.cs : function plant]
 				var rate = 0;

@@ -693,97 +693,8 @@
       ]
     },
     {
-      "id": "apple_tree",
-      "name": "Apple Tree",
-      "buy": 4000,
-      "sell": 100,
-      "seasons": [
-        "fall"
-      ],
-      "stages": [
-        28
-      ],
-      "regrow": 1,
-      "tree": true,
-      "harvest": {
-        "min": 1,
-        "max": 1
-      }
-    },
-    {
-      "id": "pomegranate_tree",
-      "name": "Pomegranate Tree",
-      "buy": 6000,
-      "sell": 140,
-      "seasons": [
-        "fall"
-      ],
-      "stages": [
-        28
-      ],
-      "regrow": 1,
-      "tree": true,
-      "harvest": {
-        "min": 1,
-        "max": 1
-      }
-    },
-    {
-      "id": "peach_tree",
-      "name": "Peach Tree",
-      "buy": 6000,
-      "sell": 140,
-      "seasons": [
-        "summer"
-      ],
-      "stages": [
-        28
-      ],
-      "regrow": 1,
-      "tree": true,
-      "harvest": {
-        "min": 1,
-        "max": 1
-      }
-    },
-    {
-      "id": "orange_tree",
-      "name": "Orange Tree",
-      "buy": 4000,
-      "sell": 100,
-      "seasons": [
-        "summer"
-      ],
-      "stages": [
-        28
-      ],
-      "regrow": 1,
-      "tree": true,
-      "harvest": {
-        "min": 1,
-        "max": 1
-      }
-    },
-    {
-      "id": "cherry_tree",
-      "name": "Cherry Tree",
-      "buy": 3400,
-      "sell": 80,
-      "seasons": [
-        "spring"
-      ],
-      "stages": [
-        28
-      ],
-      "regrow": 1,
-      "tree": true,
-      "harvest": {
-        "min": 1,
-        "max": 1
-      }
-    },
-    {
       "id": "apricot_tree",
+      "index": 746,
       "name": "Apricot Tree",
       "buy": 2000,
       "sell": 50,
@@ -795,10 +706,93 @@
       ],
       "regrow": 1,
       "tree": true,
-      "harvest": {
-        "min": 1,
-        "max": 1
-      }
+      "note": "Fruit tree sapling. Matures in 28 days. Produces 1 fruit/day in-season on the Farm; year-round indoors (Greenhouse / Ginger Island).",
+      "harvest": {}
+    },
+    {
+      "id": "cherry_tree",
+      "index": 747,
+      "name": "Cherry Tree",
+      "buy": 3400,
+      "sell": 80,
+      "seasons": [
+        "spring"
+      ],
+      "stages": [
+        28
+      ],
+      "regrow": 1,
+      "tree": true,
+      "note": "Fruit tree sapling. Matures in 28 days. Produces 1 fruit/day in-season on the Farm; year-round indoors (Greenhouse / Ginger Island).",
+      "harvest": {}
+    },
+    {
+      "id": "orange_tree",
+      "index": 748,
+      "name": "Orange Tree",
+      "buy": 4000,
+      "sell": 100,
+      "seasons": [
+        "summer"
+      ],
+      "stages": [
+        28
+      ],
+      "regrow": 1,
+      "tree": true,
+      "note": "Fruit tree sapling. Matures in 28 days. Produces 1 fruit/day in-season on the Farm; year-round indoors (Greenhouse / Ginger Island).",
+      "harvest": {}
+    },
+    {
+      "id": "peach_tree",
+      "index": 749,
+      "name": "Peach Tree",
+      "buy": 6000,
+      "sell": 140,
+      "seasons": [
+        "summer"
+      ],
+      "stages": [
+        28
+      ],
+      "regrow": 1,
+      "tree": true,
+      "note": "Fruit tree sapling. Matures in 28 days. Produces 1 fruit/day in-season on the Farm; year-round indoors (Greenhouse / Ginger Island).",
+      "harvest": {}
+    },
+    {
+      "id": "apple_tree",
+      "index": 750,
+      "name": "Apple Tree",
+      "buy": 4000,
+      "sell": 100,
+      "seasons": [
+        "fall"
+      ],
+      "stages": [
+        28
+      ],
+      "regrow": 1,
+      "tree": true,
+      "note": "Fruit tree sapling. Matures in 28 days. Produces 1 fruit/day in-season on the Farm; year-round indoors (Greenhouse / Ginger Island).",
+      "harvest": {}
+    },
+    {
+      "id": "pomegranate_tree",
+      "index": 751,
+      "name": "Pomegranate Tree",
+      "buy": 6000,
+      "sell": 140,
+      "seasons": [
+        "fall"
+      ],
+      "stages": [
+        28
+      ],
+      "regrow": 1,
+      "tree": true,
+      "note": "Fruit tree sapling. Matures in 28 days. Produces 1 fruit/day in-season on the Farm; year-round indoors (Greenhouse / Ginger Island).",
+      "harvest": {}
     }
   ],
   "fertilizer": [
@@ -1011,6 +1005,5 @@
         "name": "Clint"
       }
     ]
-  },
-  "updated_at": "2026-02-14"
+  }
 }
