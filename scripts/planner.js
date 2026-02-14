@@ -24,6 +24,8 @@ function round(num, decimals){
 	return Math.round(num * decimals) / decimals;
 }
 
+// checklist-model fallback (prevents app from failing to bootstrap if the directive file didn't load)
+try { angular.module('checklist-model'); } catch (e) { angular.module('checklist-model', []); }
 
 // Angular app
 angular.module("planner_app", ["checklist-model"])
