@@ -791,7 +791,7 @@
         20
       ],
       "regrow": 1,
-      "note": "Matures in 20 days. Produces 1 Tea Leaves each day on days 22–28 of Spring/Summer/Fall (and Winter if indoors).",
+      "note": "Matures in 20 days. Produces 1 Tea Leaves each day on days 22\u201328 of Spring/Summer/Fall (and Winter if indoors).",
       "harvest": {}
     },
     {
@@ -972,6 +972,40 @@
       "regrow": 1,
       "tree": true,
       "note": "Fruit tree. Takes 28 days to mature. Produces daily in-season (year-round in Greenhouse/Ginger Island). No fertilizer."
+    },
+    {
+      "buy": 0,
+      "harvest": {},
+      "id": "mango_tree",
+      "index": 756,
+      "name": "Mango Tree",
+      "seasons": [
+        "summer"
+      ],
+      "sell": 130,
+      "stages": [
+        28
+      ],
+      "regrow": 1,
+      "tree": true,
+      "note": "Fruit tree. Takes 28 days to mature. Produces daily in-season (year-round on Ginger Island / in Greenhouse). Not sold at Pierre; obtained on Ginger Island (Island Trader / Golden Coconut). No fertilizer."
+    },
+    {
+      "buy": 0,
+      "harvest": {},
+      "id": "banana_tree",
+      "index": 757,
+      "name": "Banana Tree",
+      "seasons": [
+        "summer"
+      ],
+      "sell": 150,
+      "stages": [
+        28
+      ],
+      "regrow": 1,
+      "tree": true,
+      "note": "Fruit tree. Takes 28 days to mature. Produces daily in-season (year-round on Ginger Island / in Greenhouse). Not sold at Pierre; obtained on Ginger Island (Island Trader / Golden Coconut). No fertilizer."
     }
   ],
   "fertilizer": [
