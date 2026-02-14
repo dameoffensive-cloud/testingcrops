@@ -627,17 +627,15 @@ function in_greenhouse(){
 		var idx = order.indexOf(self.cview);
 		if (idx < 0) idx = 0;
 		self.cview = order[(idx + 1) % order.length];
-
-		// Keep legacy mode flag in sync (used by add_plan / growth rules).
-		if (self.cview == "greenhouse") self.cmode = "greenhouse";
-		else if (self.cview == "island") self.cmode = "island";
-		else self.cmode = "farm";
+		// Keep internal mode in sync with view
+		self.cmode = (self.cview == "all") ? "farm" : self.cview;
 	}
 
 	
 	// Set current farm mode
 	function set_mode(mode){
 		self.cmode = mode;
+		self.cview = mode;
 	}
 	
 	////////////////////////////////
@@ -1037,7 +1035,6 @@ function in_greenhouse(){
 		self.stages = [];
 		self.regrow;
 		self.wild = false;
-		self.tree = false;
 		
 		// Harvest data
 		self.harvest = {
@@ -1071,7 +1068,6 @@ function in_greenhouse(){
 			self.stages = data.stages;
 			self.regrow = data.regrow;
 			if (data.wild) self.wild = true;
-			if (data.tree) self.tree = true;
 			
 			// Harvest data
 			if (data.harvest.min) self.harvest.min = data.harvest.min;
@@ -1532,8 +1528,13 @@ Plan.prototype.get_location_label = function(){
 Plan.prototype.get_grow_time = function(){
 	var stages = $.extend([], this.crop.stages);
 
-	// Fruit trees: ignore fertilizer/irrigation speed-ups (saplings always take fixed time to mature).
-	if (this.crop && this.crop.tree) return this.crop.grow;
+	// Fruit trees ignore Speed-Gro / irrigation growth reductions
+	if (this.crop && this.crop.tree) {
+		// Trees always take their full stage time to mature
+		var total = 0;
+		for (var ti = 0; ti < stages.length; ti++) total += stages[ti];
+		return total;
+	}
 
 	// Irrigated paddies (near water): available on Farm or Ginger Island (not Greenhouse)
 	// Rice Shoots: 8 days (6 when irrigated). Taro Tubers: 10 days (7 when irrigated).
