@@ -90,6 +90,7 @@ function planner_controller($scope){
 	self.get_date = get_date;			// Get formatted date string
 	self.ci_set_sort = ci_set_sort;		// Set key to sort crop info by
 	self.planner_valid_crops = planner_valid_crops;
+	self.on_crop_change = on_crop_change;
 	
 	// Crop info search/filter settings
 	self.cinfo_settings = {
@@ -339,8 +340,12 @@ $scope.$apply();
 				// Update seasonal number of plantings
 				s_plant_total.plantings += plan.amount;
 				
-				// If first harvest of crop occurs after its
-				// growth season(s), continue $.each
+				// If first harvest of crop occurs after its growth season(s), continue $.each
+				// Fruit trees are special: they can be planted any season, but only produce in-season (year-round indoors).
+				if (crop.tree && !farm.greenhouse){
+					// Tree produces starting the later of: maturity date or the fruit season start.
+					first_harvest = Math.max(first_harvest, crop.start);
+				}
 				if (first_harvest > crop_end) return;
 				
 				// Initial harvest
@@ -627,15 +632,12 @@ function in_greenhouse(){
 		var idx = order.indexOf(self.cview);
 		if (idx < 0) idx = 0;
 		self.cview = order[(idx + 1) % order.length];
-		// Keep internal mode in sync with view
-		self.cmode = (self.cview == "all") ? "farm" : self.cview;
 	}
 
 	
 	// Set current farm mode
 	function set_mode(mode){
 		self.cmode = mode;
-		self.cview = mode;
 	}
 	
 	////////////////////////////////
@@ -701,8 +703,22 @@ function in_greenhouse(){
 		if (self.in_greenhouse()) return true;
 
 		// On farm, only allow crops that can grow in the current season.
+		if (crop.tree) return true;
+
+		// On farm, only allow crops that can grow in the current season.
 		return crop.can_grow(self.cseason, true);
 	}
+
+	// When crop selection changes in the modal, enforce tree rules.
+	function on_crop_change(){
+		self.newplan.irrigated = false;
+		var crop = self.crops[self.newplan.crop_id];
+		if (crop && crop.tree){
+			// Trees cannot use fertilizer in-game, force None and disable UI.
+			self.newplan.fertilizer = self.fertilizer["none"];
+		}
+	}
+
 	
 	
 	/********************************
@@ -1067,6 +1083,8 @@ function in_greenhouse(){
 			self.seasons = data.seasons;
 			self.stages = data.stages;
 			self.regrow = data.regrow;
+			self.tree = (data.tree) ? true : false;
+			self.group = self.tree ? "Fruit Trees" : "Crops";
 			if (data.wild) self.wild = true;
 			
 			// Harvest data
@@ -1269,7 +1287,8 @@ function in_greenhouse(){
 		
 		// Check that crop can grow
 		var crop = planner.crops[newplan.crop_id];
-		if (!crop || !crop.can_grow(date, false, planner.in_greenhouse())) return false;
+		if (!crop) return false;
+		if (!crop.tree && !crop.can_grow(date, false, planner.in_greenhouse())) return false;
 		newplan.crop = crop;
 		
 		// Amount to plant
@@ -1286,7 +1305,7 @@ function in_greenhouse(){
 		var crop_growth = plan.get_grow_time();
 		var next_planting = date + crop_growth;
 		var next_grow = next_planting + crop_growth;
-		if (!auto_replant || crop.regrow || (auto_replant && !crop.can_grow(next_grow, false, planner.in_greenhouse()))){
+		if (!auto_replant || crop.tree || crop.regrow || (auto_replant && !crop.can_grow(next_grow, false, planner.in_greenhouse()))){
 			// Update
 			update(this);
 			save_data();
@@ -1528,12 +1547,11 @@ Plan.prototype.get_location_label = function(){
 Plan.prototype.get_grow_time = function(){
 	var stages = $.extend([], this.crop.stages);
 
-	// Fruit trees ignore Speed-Gro / irrigation growth reductions
-	if (this.crop && this.crop.tree) {
-		// Trees always take their full stage time to mature
-		var total = 0;
-		for (var ti = 0; ti < stages.length; ti++) total += stages[ti];
-		return total;
+	// Fruit trees ignore fertilizer, irrigated growth reduction, and agriculturist speed bonuses.
+	if (this.crop && this.crop.tree){
+		var tdays = 0;
+		for (var t = 0; t < stages.length; t++) tdays += stages[t];
+		return tdays;
 	}
 
 	// Irrigated paddies (near water): available on Farm or Ginger Island (not Greenhouse)
