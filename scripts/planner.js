@@ -1720,3 +1720,59 @@ Plan.prototype.get_grow_time = function(){
 	// aren't hoisted
 	init();
 }
+
+// ===============================
+// Tier 1 Gap Suggestion Engine
+// ===============================
+
+function getGapSuggestions({
+  harvestDay,
+  seasonLength,
+  currentSeason,
+  fertilizerMultiplier,
+  crops
+}) {
+  const remainingDays = seasonLength - harvestDay;
+  if (remainingDays <= 0) return null;
+
+  const fitsThisSeason = [];
+  const crossSeason = [];
+
+  crops.forEach(crop => {
+    if (!crop.seasons.includes(currentSeason)) return;
+
+    const adjustedDays = Math.floor(crop.growthDays * fertilizerMultiplier);
+
+    if (adjustedDays <= remainingDays) {
+      fitsThisSeason.push({
+        name: crop.name,
+        adjustedDays,
+        totalProfit: crop.sellPrice - crop.seedPrice
+      });
+    } else {
+      // Cross-season viable check
+      crop.seasons.forEach(season => {
+        if (season !== currentSeason) {
+          crossSeason.push({
+            name: crop.name,
+            harvestIn: season
+          });
+        }
+      });
+    }
+  });
+
+  // Rank by total profit (Tier 1 logic)
+  fitsThisSeason.sort((a, b) => b.totalProfit - a.totalProfit);
+
+  return {
+    remainingDays,
+    fitsThisSeason,
+    crossSeason
+  };
+}
+
+// ===============================
+// End Gap Suggestion Engine
+// ===============================
+
