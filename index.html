@@ -509,12 +509,15 @@
 					<div ng-show="!self.calendar_plans(self.cdate).length" class="text-muted"><i class="fa fa-tint"></i> No planting.<hr></div>
 					
 					
-					<div class="text-muted" style="margin:8px 0;">
+					
+					<!-- force-evaluate harvests once per digest and store on scope -->
+					<div ng-show="((harvests = self.calendar_harvests(self.cdate)) && false)"></div>
+<div class="text-muted" style="margin:8px 0;">
 						<small>
-							Debug: cdate={{self.cdate}} | harvest_count={{self.calendar_harvests(self.cdate).length}} | view={{self.cview}}
+							Debug: cdate={{self.cdate}} | harvest_count={{harvests.length}} | view={{self.cview}}
 						</small>
 					</div>
-<div ng-show="self.calendar_harvests(self.cdate).length">
+<div ng-show="harvests.length">
 						<div class="panel panel-default">
 							<div class="panel-heading">
 								<h3 class="panel-title"><i class="fa fa-pagelines"></i> Harvesting</h3>
@@ -531,7 +534,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										<tr class="crop" ng-repeat="harvest in self.calendar_harvests(self.cdate)">
+										<tr class="crop" ng-repeat="harvest in harvests">
 											<td width="1">
 												<img ng-src="{{harvest.crop.get_image()}}">
 											</td>
@@ -608,7 +611,7 @@
 							</div>
 						</div>
 					</div>
-					<div ng-show="!self.calendar_harvests(self.cdate).length" class="text-muted"><i class="fa fa-pagelines"></i> No harvests.</div>
+					<div ng-show="!harvests.length" class="text-muted"><i class="fa fa-pagelines"></i> No harvests.</div>
 				</div>
 				<div class="modal-footer">
 					<div class="btn btn-default" data-dismiss="modal"><i class="fa fa-check"></i> Done</div>
