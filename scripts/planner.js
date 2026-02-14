@@ -508,7 +508,7 @@ $scope.$apply();
 	// Open crop planner modal
 	function open_plans(date){
 		self.planner_modal.modal();
-		self.cdate = date;
+		self.cdate = parseInt(date, 10);
 	}
 	
 	////////////////////////////////
@@ -562,6 +562,8 @@ $scope.$apply();
 
 	// Combined calendar helpers (farm + greenhouse/island)
 	function calendar_plans(date){
+		date = parseInt(date, 10);
+
 		if (!self.cyear) return [];
 		var a = (self.cyear.data.farm && self.cyear.data.farm.plans[date]) ? self.cyear.data.farm.plans[date] : [];
 		var b = (self.cyear.data.greenhouse && self.cyear.data.greenhouse.plans[date]) ? self.cyear.data.greenhouse.plans[date] : [];
@@ -574,6 +576,8 @@ $scope.$apply();
 	}
 
 	function calendar_harvests(date){
+		date = parseInt(date, 10);
+
 		if (!self.cyear) return [];
 		var a = (self.cyear.data.farm && self.cyear.data.farm.harvests[date]) ? self.cyear.data.farm.harvests[date] : [];
 		var b = (self.cyear.data.greenhouse && self.cyear.data.greenhouse.harvests[date]) ? self.cyear.data.greenhouse.harvests[date] : [];
@@ -602,20 +606,16 @@ $scope.$apply();
 
 	self.gap_suggestions_after_last_harvest = gap_suggestions_after_last_harvest;
 
-	// Returns suggestions for filling the remaining season window after the LAST harvest on this day.
-	// Shows even if it wasn't an auto-replant chain.
 	function gap_suggestions_after_last_harvest(date){
 		if (!self.cyear) return null;
 
+		date = parseInt(date, 10);
 		var harvests = calendar_harvests(date);
 		if (!harvests || !harvests.length) return null;
 
-		// Use the last harvest on this day (matches your request: "under the last auto harvest item"
-		// but also works for normal harvest days).
 		var target = harvests[harvests.length - 1];
 		if (!target || !target.plan || !target.crop) return null;
 
-		// Suggestions start "today" (the harvest date)
 		var plantDate = date;
 		var season = planner.get_season(plantDate);
 		if (!season) return null;
@@ -636,18 +636,14 @@ $scope.$apply();
 			if (!crop || crop.id == "mixed_seeds") return;
 
 			var in_greenhouse = (target.location == "greenhouse") ? true : (target.plan && target.plan.greenhouse ? true : false);
-
-			// Must be plantable today in the same context (greenhouse vs outside)
 			if (!crop.can_grow(plantDate, false, in_greenhouse)) return;
 
-			// Estimate grow time using the same rule used by Plan.get_grow_time (growth_rate + agriculturist)
 			var remove_days = 0;
 			if (rate > 0) remove_days += Math.ceil(crop.grow * rate);
 			var adjustedDays = Math.max(1, crop.grow - remove_days);
 
 			var harvestDate = plantDate + adjustedDays;
 
-			// Profit estimate (simple Tier 1): base yield * sell - seed cost (for 1 plot)
 			var estYield = (crop.harvest && crop.harvest.min) ? crop.harvest.min : 1;
 			var estProfit = (crop.sell * estYield) - (crop.buy || 0);
 
