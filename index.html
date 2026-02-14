@@ -508,7 +508,13 @@
 					</div>
 					<div ng-show="!self.calendar_plans(self.cdate).length" class="text-muted"><i class="fa fa-tint"></i> No planting.<hr></div>
 					
-					<div ng-show="self.calendar_harvests(self.cdate).length">
+					
+					<div class="text-muted" style="margin:8px 0;">
+						<small>
+							Debug: cdate={{self.cdate}} | harvest_count={{self.calendar_harvests(self.cdate).length}} | view={{self.cview}}
+						</small>
+					</div>
+<div ng-show="self.calendar_harvests(self.cdate).length">
 						<div class="panel panel-default">
 							<div class="panel-heading">
 								<h3 class="panel-title"><i class="fa fa-pagelines"></i> Harvesting</h3>
