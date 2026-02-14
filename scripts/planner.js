@@ -394,7 +394,89 @@ $scope.$apply();
 			});
 		});
 		
-		// Add up annual total
+		
+		// --- Fruit tree carry-over harvests (trees persist across years) ---
+		// Trees are planted once, mature after their grow time, and then continue producing in future years.
+		// We only add HARVEST revenue here (no planting costs / no planting counts), and only for trees planted in prior years.
+		(function add_prior_year_tree_harvests(){
+			var cy = farm.year.index;
+			if (cy <= 0) return; // no prior years
+
+			// Helper: determine if a plan belongs to this farm location set
+			function plan_matches_farm(p){
+				var loc = (p && p.location) ? p.location : (farm.greenhouse ? 'greenhouse' : 'farm');
+				if (farm.greenhouse) return (loc !== 'farm');
+				return (loc === 'farm');
+			}
+
+			for (var yi = 0; yi < cy; yi++){
+				var py = self.years[yi];
+				if (!py || !py.data) continue;
+
+				// Use the corresponding plan set (farm vs greenhouse)
+				var pf = farm.greenhouse ? py.data.greenhouse : py.data.farm;
+				if (!pf || !pf.plans) continue;
+
+				$.each(pf.plans, function(pdate, plans){
+					pdate = parseInt(pdate);
+					if (!plans || !plans.length) return;
+
+					$.each(plans, function(i, plan){
+						if (!plan || !plan.crop || !plan.crop.tree) return;
+						if (!plan_matches_farm(plan)) return;
+
+						var crop = plan.crop;
+						var grow_time = plan.get_grow_time();
+						var planting_global = (yi * YEAR_DAYS) + pdate;
+						var maturity_global = planting_global + grow_time;
+
+						// Determine production window within the CURRENT year
+						var year_start_global = (cy * YEAR_DAYS) + 1;
+						var year_end_global = year_start_global + YEAR_DAYS - 1;
+
+						var year_round = farm.greenhouse; // greenhouse + island are year-round
+						var window_start = year_round ? year_start_global : ((cy * YEAR_DAYS) + crop.start);
+						var window_end = year_round ? year_end_global : ((cy * YEAR_DAYS) + crop.end);
+
+						var first_harvest_global = Math.max(maturity_global, window_start);
+						if (first_harvest_global > window_end) return;
+
+						var reg = crop.regrow || 1;
+						var hcount = Math.floor((window_end - first_harvest_global) / reg);
+
+						for (var h = 0; h <= hcount; h++){
+							var h_global = first_harvest_global + (h * reg);
+							if (h_global < year_start_global || h_global > year_end_global) continue;
+
+							var h_local = h_global - (cy * YEAR_DAYS);
+							var harvest = new Harvest(plan, h_local, (h > 0));
+
+							// Update harvests
+							if (!farm.harvests[h_local]) farm.harvests[h_local] = [];
+							farm.harvests[h_local].push(harvest);
+
+							// Update daily revenues from harvests
+							if (!farm.totals.day[h_local]) farm.totals.day[h_local] = new Finance;
+							var d_harvest = farm.totals.day[h_local];
+							d_harvest.profit.min += harvest.revenue.min;
+							d_harvest.profit.max += harvest.revenue.max;
+
+							// Update seasonal revenues from harvests
+							var h_season = Math.floor((h_local - 1) / SEASON_DAYS);
+							var s_harvest_total = farm.totals.season[h_season];
+							s_harvest_total.profit.min += harvest.revenue.min;
+							s_harvest_total.profit.max += harvest.revenue.max;
+
+							// Update seasonal number of harvests
+							s_harvest_total.harvests.min += harvest.yield.min;
+							s_harvest_total.harvests.max += harvest.yield.max;
+						}
+					});
+				});
+			}
+		})();
+
+// Add up annual total
 		for (var i = 0; i < farm.totals.seasons; i++){
 			var season = farm.totals.seasons[i];
 			var y_total = farm.totals.year;
