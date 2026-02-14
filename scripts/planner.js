@@ -497,7 +497,11 @@ $scope.$apply();
 		if (!validate_plan_amount()) return;
 		self.cyear.add_plan(self.newplan, date, auto_replant);
 		self.newplan = new Plan;
-	}
+		// Ensure Angular reflects changes immediately (tree plans previously sometimes required a manual refresh).
+		try { $scope.$applyAsync(); } catch (e) {}
+		try { update(self.cyear, true); } catch (e) {}
+		try { save_data(); } catch (e) {}
+		}
 	
 	// Add plan to plans list on enter keypress
 	function add_plan_key(date, e){
@@ -1614,7 +1618,7 @@ init();
 	// Compile data to be saved as JSON
 	Plan.prototype.get_data = function(){
     var data = {};
-    data.crop = this.crop.id;
+    data.crop = (this.crop && this.crop.id) ? this.crop.id : this.crop_id;
     data.amount = this.amount;
     if (this.fertilizer && !this.fertilizer.is_none()) data.fertilizer = this.fertilizer.id;
     if (this.irrigated) data.irrigated = true;
