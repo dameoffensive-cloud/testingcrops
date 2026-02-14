@@ -872,106 +872,106 @@
       ]
     },
     {
+      "buy": 2000,
+      "harvest": {},
       "id": "apricot_tree",
       "index": 750,
       "name": "Apricot Tree",
-      "buy": 2000,
-      "sell": 50,
       "seasons": [
         "spring"
       ],
+      "sell": 50,
       "stages": [
         28
       ],
       "regrow": 1,
       "tree": true,
-      "note": "Fruit tree sapling. Matures in 28 days. Produces 1 fruit/day in-season on the Farm; year-round indoors (Greenhouse / Ginger Island).",
-      "harvest": {}
+      "note": "Fruit tree. Takes 28 days to mature. Produces daily in-season (year-round in Greenhouse/Ginger Island). No fertilizer."
     },
     {
+      "buy": 3400,
+      "harvest": {},
       "id": "cherry_tree",
       "index": 751,
       "name": "Cherry Tree",
-      "buy": 3400,
-      "sell": 80,
       "seasons": [
         "spring"
       ],
+      "sell": 80,
       "stages": [
         28
       ],
       "regrow": 1,
       "tree": true,
-      "note": "Fruit tree sapling. Matures in 28 days. Produces 1 fruit/day in-season on the Farm; year-round indoors (Greenhouse / Ginger Island).",
-      "harvest": {}
+      "note": "Fruit tree. Takes 28 days to mature. Produces daily in-season (year-round in Greenhouse/Ginger Island). No fertilizer."
     },
     {
+      "buy": 4000,
+      "harvest": {},
       "id": "orange_tree",
       "index": 752,
       "name": "Orange Tree",
-      "buy": 4000,
-      "sell": 100,
       "seasons": [
         "summer"
       ],
+      "sell": 100,
       "stages": [
         28
       ],
       "regrow": 1,
       "tree": true,
-      "note": "Fruit tree sapling. Matures in 28 days. Produces 1 fruit/day in-season on the Farm; year-round indoors (Greenhouse / Ginger Island).",
-      "harvest": {}
+      "note": "Fruit tree. Takes 28 days to mature. Produces daily in-season (year-round in Greenhouse/Ginger Island). No fertilizer."
     },
     {
+      "buy": 6000,
+      "harvest": {},
       "id": "peach_tree",
       "index": 753,
       "name": "Peach Tree",
-      "buy": 6000,
-      "sell": 140,
       "seasons": [
         "summer"
       ],
+      "sell": 140,
       "stages": [
         28
       ],
       "regrow": 1,
       "tree": true,
-      "note": "Fruit tree sapling. Matures in 28 days. Produces 1 fruit/day in-season on the Farm; year-round indoors (Greenhouse / Ginger Island).",
-      "harvest": {}
+      "note": "Fruit tree. Takes 28 days to mature. Produces daily in-season (year-round in Greenhouse/Ginger Island). No fertilizer."
     },
     {
+      "buy": 4000,
+      "harvest": {},
       "id": "apple_tree",
       "index": 754,
       "name": "Apple Tree",
-      "buy": 4000,
-      "sell": 100,
       "seasons": [
         "fall"
       ],
+      "sell": 100,
       "stages": [
         28
       ],
       "regrow": 1,
       "tree": true,
-      "note": "Fruit tree sapling. Matures in 28 days. Produces 1 fruit/day in-season on the Farm; year-round indoors (Greenhouse / Ginger Island).",
-      "harvest": {}
+      "note": "Fruit tree. Takes 28 days to mature. Produces daily in-season (year-round in Greenhouse/Ginger Island). No fertilizer."
     },
     {
+      "buy": 6000,
+      "harvest": {},
       "id": "pomegranate_tree",
       "index": 755,
       "name": "Pomegranate Tree",
-      "buy": 6000,
-      "sell": 140,
       "seasons": [
         "fall"
       ],
+      "sell": 140,
       "stages": [
         28
       ],
       "regrow": 1,
       "tree": true,
-      "note": "Fruit tree sapling. Matures in 28 days. Produces 1 fruit/day in-season on the Farm; year-round indoors (Greenhouse / Ginger Island).",
-      "harvest": {}
+      "note": "Fruit tree. Takes 28 days to mature. Produces daily in-season (year-round in Greenhouse/Ginger Island). No fertilizer."
     }
   ],
   "fertilizer": [

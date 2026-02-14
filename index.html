@@ -413,8 +413,8 @@
 						<div class="row">
 							<div class="col-md-4 col-xs-12">
 								<b>Plant Crop</b><br>
-								<select class="form-control" ng-model="self.newplan.crop_id" ng-change="self.newplan.irrigated = false"
-									ng-options="crop.id as crop.name for crop in self.crops_list | filter:self.planner_valid_crops">
+								<select class="form-control" ng-model="self.newplan.crop_id" ng-change="self.on_crop_change()"
+									ng-options="crop.id as crop.name group by crop.group for crop in self.crops_list | filter:self.planner_valid_crops">
 								</select>
 							</div>
 							<div class="col-md-2 col-xs-4">
@@ -433,7 +433,10 @@
 							</div>
 							<div class="col-md-3 col-xs-4">
 								<b>Fertilizer</b><br>
-								<select class="form-control" ng-model="self.newplan.fertilizer" ng-options="fert as fert.name for fert in self.config.fertilizer track by fert.id">
+								<select class="form-control" ng-model="self.newplan.fertilizer"
+									ng-disabled="self.crops[self.newplan.crop_id] && self.crops[self.newplan.crop_id].tree"
+									title="{{(self.crops[self.newplan.crop_id] && self.crops[self.newplan.crop_id].tree) ? 'Fruit trees cannot use fertilizer' : ''}}"
+									ng-options="fert as fert.name for fert in self.config.fertilizer track by fert.id">
 								</select>
 							
 								<div class="checkbox" style="margin-top:8px;" ng-if="self.cmode != 'greenhouse' && (self.newplan.crop_id == 'rice_shoot' || self.newplan.crop_id == 'taro_tuber')">

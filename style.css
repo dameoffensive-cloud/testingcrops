@@ -230,3 +230,10 @@
   width: auto !important;
 }
 
+
+
+/* Fruit trees cannot use fertilizer */
+select[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
