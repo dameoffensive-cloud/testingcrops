@@ -594,6 +594,135 @@ $scope.$apply();
 		return fin;
 	}
 
+
+
+	/********************************
+		GAP SUGGESTIONS (Tier 1)
+	********************************/
+
+	self.gap_suggestions_after_last_auto_harvest = gap_suggestions_after_last_auto_harvest;
+
+	// Returns {remainingDays, fitsThisSeason[], crossSeason[], contextCropName, contextLocationLabel} or null
+	function gap_suggestions_after_last_auto_harvest(date){
+		if (!self.cyear) return null;
+
+		var harvests = calendar_harvests(date);
+		if (!harvests || !harvests.length) return null;
+
+		// Find last harvest on this date that looks like the END of an auto-replant chain:
+		// - has a predecessor plan with identical settings
+		// - does NOT have a successor plan planted on this same date with identical settings
+		var target = null;
+		for (var i = 0; i < harvests.length; i++){
+			var h = harvests[i];
+			if (!h || !h.plan || !h.crop) continue;
+
+			var loc = (h.location || (h.plan && h.plan.location) || "farm");
+			var farm = (self.cyear.data && self.cyear.data[loc]) ? self.cyear.data[loc] : null;
+			if (!farm || !farm.plans) continue;
+
+			// Use the plan's own grow time (includes speed-gro + agriculturist)
+			var grow = (h.plan.get_grow_time) ? h.plan.get_grow_time() : h.crop.grow;
+			var predecessorDate = (h.plan.date || 0) - grow;
+			if (predecessorDate < 1) continue;
+
+			// predecessor exists?
+			var predecessorExists = has_matching_plan(farm.plans, predecessorDate, h.plan, h.crop);
+
+			// successor exists (a replant on harvest day)?
+			var successorExists = has_matching_plan(farm.plans, date, h.plan, h.crop);
+
+			if (predecessorExists && !successorExists){
+				target = h; // keep last match
+			}
+		}
+
+		if (!target) return null;
+
+		// Build suggestions starting "today" (the harvest date)
+		var plantDate = date;
+		var season = planner.get_season(plantDate);
+		if (!season) return null;
+
+		var seasonEnd = season.end;
+		var remainingDays = seasonEnd - plantDate;
+		if (remainingDays <= 0) return null;
+
+		var fertilizer = (target.plan && target.plan.fertilizer) ? target.plan.fertilizer : planner.fertilizer["none"];
+		var rate = 0;
+		if (fertilizer && fertilizer.growth_rate) rate += fertilizer.growth_rate;
+		if (planner.player && planner.player.agriculturist) rate += 0.1;
+
+		var fitsThisSeason = [];
+		var crossSeason = [];
+
+		$.each(planner.crops_list, function(_, crop){
+			if (!crop || crop.id == "mixed_seeds") return;
+
+			// Must be plantable today in the same context (greenhouse vs outside)
+			var in_greenhouse = (target.location == "greenhouse") ? true : false;
+			if (!crop.can_grow(plantDate, false, in_greenhouse)) return;
+
+			// Estimate grow time using the same rule used by Plan.get_grow_time (data-driven growth_rate + agriculturist)
+			var remove_days = 0;
+			if (rate > 0) remove_days += Math.ceil(crop.grow * rate);
+			var adjustedDays = Math.max(1, crop.grow - remove_days);
+
+			var harvestDate = plantDate + adjustedDays;
+
+			// Profit estimate (simple Tier 1): base yield * sell - seed cost (for 1 plot)
+			var estYield = (crop.harvest && crop.harvest.min) ? crop.harvest.min : 1;
+			var estProfit = (crop.sell * estYield) - (crop.buy || 0);
+
+			if (harvestDate <= seasonEnd){
+				fitsThisSeason.push({name: crop.name, id: crop.id, days: adjustedDays, profit: estProfit});
+			} else if (crop.can_grow(harvestDate, false, in_greenhouse)){
+				// Grows into next season (multi-season) or greenhouse
+				var harvestSeason = planner.get_season(harvestDate);
+				crossSeason.push({name: crop.name, id: crop.id, days: adjustedDays, profit: estProfit, harvestSeason: harvestSeason ? harvestSeason.name : ""});
+			}
+		});
+
+		fitsThisSeason.sort(function(a,b){ return (b.profit||0) - (a.profit||0); });
+		crossSeason.sort(function(a,b){ return (b.profit||0) - (a.profit||0); });
+
+		// limit to keep UI tidy
+		fitsThisSeason = fitsThisSeason.slice(0, 6);
+		crossSeason = crossSeason.slice(0, 6);
+
+		return {
+			remainingDays: remainingDays,
+			fitsThisSeason: fitsThisSeason,
+			crossSeason: crossSeason,
+			contextCropName: target.crop.name,
+			contextLocationLabel: (target.plan && target.plan.get_location_label) ? target.plan.get_location_label() : (target.location || "Farm")
+		};
+	}
+
+	function has_matching_plan(plansByDate, date, plan, crop){
+		if (!plansByDate || !plansByDate[date]) return false;
+		var arr = plansByDate[date];
+		for (var i=0; i<arr.length; i++){
+			var p = arr[i];
+			if (!p || !p.crop) continue;
+			if (p.crop.id != crop.id) continue;
+
+			// compare key settings
+			var fertA = (p.fertilizer && p.fertilizer.id) ? p.fertilizer.id : "none";
+			var fertB = (plan.fertilizer && plan.fertilizer.id) ? plan.fertilizer.id : "none";
+			if (fertA != fertB) continue;
+
+			if ((p.amount||0) != (plan.amount||0)) continue;
+			if (!!p.irrigated != !!plan.irrigated) continue;
+			// location already segmented by farm/greenhouse, but keep this for safety:
+			if ((p.location||"farm") != (plan.location||"farm")) continue;
+
+			return true;
+		}
+		return false;
+	}
+
+
 	self.calendar_plans = calendar_plans;
 	self.calendar_harvests = calendar_harvests;
 	self.calendar_totals_day = calendar_totals_day;
@@ -1720,59 +1849,3 @@ Plan.prototype.get_grow_time = function(){
 	// aren't hoisted
 	init();
 }
-
-// ===============================
-// Tier 1 Gap Suggestion Engine
-// ===============================
-
-function getGapSuggestions({
-  harvestDay,
-  seasonLength,
-  currentSeason,
-  fertilizerMultiplier,
-  crops
-}) {
-  const remainingDays = seasonLength - harvestDay;
-  if (remainingDays <= 0) return null;
-
-  const fitsThisSeason = [];
-  const crossSeason = [];
-
-  crops.forEach(crop => {
-    if (!crop.seasons.includes(currentSeason)) return;
-
-    const adjustedDays = Math.floor(crop.growthDays * fertilizerMultiplier);
-
-    if (adjustedDays <= remainingDays) {
-      fitsThisSeason.push({
-        name: crop.name,
-        adjustedDays,
-        totalProfit: crop.sellPrice - crop.seedPrice
-      });
-    } else {
-      // Cross-season viable check
-      crop.seasons.forEach(season => {
-        if (season !== currentSeason) {
-          crossSeason.push({
-            name: crop.name,
-            harvestIn: season
-          });
-        }
-      });
-    }
-  });
-
-  // Rank by total profit (Tier 1 logic)
-  fitsThisSeason.sort((a, b) => b.totalProfit - a.totalProfit);
-
-  return {
-    remainingDays,
-    fitsThisSeason,
-    crossSeason
-  };
-}
-
-// ===============================
-// End Gap Suggestion Engine
-// ===============================
-
