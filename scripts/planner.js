@@ -594,8 +594,8 @@ $scope.$apply();
 
 	function calendar_totals_day(date){
 		var fin = new Finance;
-		var a = (self.cyear.data.farm && self.cyear.data.farm.totals && self.cyear.data.farm.totals.day[date]) ? self.cyear.data.farm.totals.day[date] : null;
-		var b = (self.cyear.data.greenhouse && self.cyear.data.greenhouse.totals && self.cyear.data.greenhouse.totals.day[date]) ? self.cyear.data.greenhouse.totals.day[date] : null;
+		var a = (self.cyear.data.farm && self.cyear.data.farm.totals && self.cyear.data.farm.totals.day && self.cyear.data.farm.totals.day[date]) ? self.cyear.data.farm.totals.day[date] : null;
+		var b = (self.cyear.data.greenhouse && self.cyear.data.greenhouse.totals && self.cyear.data.greenhouse.totals.day && self.cyear.data.greenhouse.totals.day[date]) ? self.cyear.data.greenhouse.totals.day[date] : null;
 		fin.profit.min = (a ? a.profit.min : 0) + (b ? b.profit.min : 0);
 		fin.profit.max = (a ? a.profit.max : 0) + (b ? b.profit.max : 0);
 		return fin;
