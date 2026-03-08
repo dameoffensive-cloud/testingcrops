@@ -502,7 +502,24 @@
 						</div>
 						<br>
 					</div>
-					
+
+					<!-- Replanting suggestions: shown when this is a harvest day with no regrowables and nothing yet planted -->
+					<div class="replant-suggestions"
+						ng-show="self.calendar_harvests(self.cdate).length && !self.has_regrowth_on_day(self.cdate) && !self.calendar_plans(self.cdate).length && self.best_fit_crops(self.cdate, 3).length">
+						<div class="replant-label"><i class="fa fa-leaf"></i> Suggested replantings</div>
+						<div class="replant-chips">
+							<div class="replant-chip"
+								ng-repeat="crop in self.best_fit_crops(self.cdate, 3)"
+								ng-click="self.suggest_crop(crop, self.cdate)"
+								ng-class="{'replant-chip-active': self.newplan.crop_id == crop.id}"
+								title="{{crop.name}} — {{crop.grow}} days to grow">
+								<img ng-src="{{crop.get_image(1)}}">
+								<span class="replant-chip-name">{{crop.name}}</span>
+								<span class="replant-chip-meta">{{crop.grow}}d &middot; {{crop.profit > 0 ? '+' : ''}}{{crop.profit}}g/d</span>
+							</div>
+						</div>
+					</div>
+
 					<div ng-show="self.calendar_plans(self.cdate).length">
 						<div class="panel panel-default">
 							<div class="panel-heading">
