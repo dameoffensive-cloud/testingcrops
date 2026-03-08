@@ -97,7 +97,9 @@ function planner_controller($scope){
 	self.crop_search_blur = crop_search_blur;
 	self.ci_sort_icon = ci_sort_icon;
 	self.best_fit_crop = best_fit_crop;
+	self.best_fit_crops = best_fit_crops;
 	self.quick_plant = quick_plant;
+	self.suggest_crop = suggest_crop;
 	self.has_regrowth_on_day = has_regrowth_on_day;
 	
 	// Crop info search/filter settings
@@ -964,7 +966,72 @@ function in_greenhouse(){
 		return best;
 	}
 
-	// Instantly plant the most profitable fitting crop on a harvest day.
+	// Return the top `limit` fitting crops sorted by profit descending.
+	// Uses identical eligibility rules to best_fit_crop.
+	function best_fit_crops(date, limit){
+		if (!self.cseason || !self.crops_list.length) return [];
+		limit = limit || 3;
+
+		var candidates = [];
+
+		$.each(self.crops_list, function(i, crop){
+			if (crop.id === "cactus_seeds" && self.cmode !== "greenhouse") return;
+			if (crop.tree) return;
+			if (crop.regrow) return;
+			if (!self.in_greenhouse() && !crop.can_grow(self.cseason, true)) return;
+
+			var deadline = self.in_greenhouse() ? (YEAR_DAYS * 10) : crop.end;
+			var grow_time = crop.grow;
+			if (planner.player.agriculturist){
+				grow_time = Math.max(1, grow_time - Math.ceil(grow_time * 0.1));
+			}
+			if (date + grow_time - 1 > deadline) return;
+
+			candidates.push(crop);
+		});
+
+		candidates.sort(function(a, b){ return b.profit - a.profit; });
+		return candidates.slice(0, limit);
+	}
+
+	// Pre-fill the newplan form with a suggested crop (including inherited fertilizer).
+	// Does NOT plant — leaves the user in control of amount, location, and final submit.
+	function suggest_crop(crop, date){
+		self.newplan.crop_id = crop.id;
+		self.newplan.crop = crop;
+		self.on_crop_change();
+
+		// Inherit best fertilizer from today's harvests (same logic as quick_plant)
+		var fert_rank = {
+			"deluxe_fertilizer": 6,
+			"quality_fertilizer": 5,
+			"basic_fertilizer":   4,
+			"hyper_speed_gro":    3,
+			"deluxe_speed_gro":   2,
+			"speed_gro":          1,
+			"none":               0
+		};
+		var inherited_fert = self.fertilizer["none"];
+		var best_rank = 0;
+		$.each(self.calendar_harvests(date), function(i, harvest){
+			var f = harvest.plan && harvest.plan.fertilizer;
+			if (!f || f.is_none()) return;
+			var rank = fert_rank[f.id] || 0;
+			if (rank > best_rank){
+				best_rank = rank;
+				inherited_fert = f;
+			}
+		});
+		if (!self.newplan.crop || !self.newplan.crop.tree){
+			self.newplan.fertilizer = inherited_fert;
+		}
+
+		// Scroll the modal body to the Plant Crop form so the pre-fill is visible
+		try {
+			var modal = document.getElementById("crop_planner");
+			if (modal) modal.querySelector(".modal-body").scrollTop = 0;
+		} catch(e){}
+	}
 	// Called from the calendar cell prompt; stopPropagation prevents the day modal opening.
 	function quick_plant(date, event){
 		if (event) event.stopPropagation();
