@@ -166,6 +166,9 @@
 									<img ng-src="{{plan.crop.get_image(1)}}">
 									<div class="loc_badge" ng-class="'loc-badge-' + plan.location" title="{{plan.get_location_label()}}">{{plan.get_location_short()}}</div>
 									<div class="amount">x{{plan.amount}}</div>
+									<div class="fert-badge" ng-show="plan.fertilizer && !plan.fertilizer.is_none()" title="{{plan.fertilizer.name}}">
+										<img ng-src="{{plan.fertilizer.get_image()}}">
+									</div>
 								</div>
 							</div>
 							<div class="more" ng-show="self.calendar_plans(date).length > 4"><a>{{self.calendar_plans(date).length-4}} more…</a></div>

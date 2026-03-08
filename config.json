@@ -627,7 +627,7 @@
     {
       "id": "rice_shoot",
       "name": "Rice Shoot (Unmilled Rice)",
-      "buy": 0,
+      "buy": 33,
       "sell": 33,
       "seasons": [
         "spring"
@@ -761,7 +761,7 @@
     {
       "id": "taro_tuber",
       "name": "Taro Tuber (Taro Root)",
-      "buy": 0,
+      "buy": 100,
       "sell": 100,
       "seasons": [
         "summer"
@@ -779,7 +779,7 @@
     {
       "id": "tea_sapling",
       "name": "Tea Sapling (Tea Bush)",
-      "buy": 0,
+      "buy": 50,
       "sell": 50,
       "seasons": [
         "spring",
@@ -974,7 +974,7 @@
       "note": "Fruit tree. Takes 28 days to mature. Produces daily in-season (year-round in Greenhouse/Ginger Island). No fertilizer."
     },
     {
-      "buy": 0,
+      "buy": 130,
       "harvest": {},
       "id": "mango_tree",
       "index": 756,
@@ -991,7 +991,7 @@
       "note": "Fruit tree. Takes 28 days to mature. Produces daily in-season (year-round on Ginger Island / in Greenhouse). Not sold at Pierre; obtained on Ginger Island (Island Trader / Golden Coconut). No fertilizer."
     },
     {
-      "buy": 0,
+      "buy": 150,
       "harvest": {},
       "id": "banana_tree",
       "index": 757,
