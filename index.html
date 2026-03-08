@@ -39,7 +39,7 @@
 <body ng-app="planner_app" ng-controller="planner_controller as self" ng-class="{'sidebar_open': self.sidebar.mode != ''}">
 	
 	
-	<div class="mobile-warning">Best viewed on desktop. On mobile, <b>landscape mode is a better experience</b>.</div>
+	<div class="mobile-warning">Portrait mode works best with the calendar in two columns. Landscape gives you the full 7-day view.</div>
 <!-- [HEADER] -->
 	<header>
 		<img src="images/logo.png" class="logo">
@@ -471,7 +471,7 @@
 									<input class="form-control" type="text" ng-model="self.newplan.amount" ng-keypress="self.add_plan_key(self.cdate, $event)">
 								</label>
 							</div>
-							<div class="col-md-3 col-xs-4">
+							<div class="col-md-3 col-xs-8">
 								<b>Location</b><br>
 								<select class="form-control" ng-model="self.cmode" ng-change="self.newplan.irrigated = false">
 									<option value="farm">Farm</option>
@@ -479,7 +479,7 @@
 									<option value="island">Ginger Island</option>
 								</select>
 							</div>
-							<div class="col-md-3 col-xs-4">
+							<div class="col-md-3 col-xs-12">
 								<b>Fertilizer</b><br>
 								<select class="form-control" ng-model="self.newplan.fertilizer"
 									ng-disabled="self.crops[self.newplan.crop_id] && self.crops[self.newplan.crop_id].tree"
@@ -538,9 +538,9 @@
 											<th colspan="2">Crop</th>
 <th>Amount</th>
 											<th>Fertilizer</th>
-											<th>Cost</th>
-											<th><i class="fa fa-clock-o"></i> Days</th>
-											<th><i class="fa fa-refresh"></i> Regrows</th>
+											<th class="mobile-hide">Cost</th>
+											<th class="mobile-hide"><i class="fa fa-clock-o"></i> Days</th>
+											<th class="mobile-hide"><i class="fa fa-refresh"></i> Regrows</th>
 											<th width="1"></th>
 											<th width="1"></th>
 										</tr>
@@ -566,9 +566,9 @@
 													<select class="form-control" ng-model="plan.fertilizer" ng-options="fert as fert.name for fert in self.config.fertilizer track by fert.id"></select>
 												</div>
 											</td>
-											<td>-{{plan.get_cost(1)}}g</td>
-											<td>{{plan.get_grow_time()}}</td>
-											<td>{{plan.crop.regrow}}</td>
+											<td class="mobile-hide">-{{plan.get_cost(1)}}g</td>
+											<td class="mobile-hide">{{plan.get_grow_time()}}</td>
+											<td class="mobile-hide">{{plan.crop.regrow}}</td>
 											<td>
 												<div ng-show="self.editplan!=plan" class="btn btn-default" ng-click="self.edit_plan(plan)"><i class="fa fa-pencil"></i></div>
 												<div ng-show="self.editplan==plan" class="btn btn-success" ng-click="self.edit_plan(plan, 1)"><i class="fa fa-save"></i></div>
@@ -593,9 +593,9 @@
 										<tr>
 											<th colspan="2">Crop</th>
 											<th>Yield</th>
-											<th>Revenue</th>
+											<th class="mobile-hide">Revenue</th>
 											<th>Profit</th>
-											<th><i class="fa fa-refresh"></i> Regrows</th>
+											<th class="mobile-hide"><i class="fa fa-refresh"></i> Regrows</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -614,7 +614,7 @@
 													x{{harvest.yield.max}}
 												</span>
 											</td>
-											<td>
+											<td class="mobile-hide">
 												<span ng-show="harvest.revenue.min==harvest.revenue.max">+{{harvest.get_revenue(1)}}g</span>
 												<span ng-show="harvest.revenue.min!=harvest.revenue.max">
 													{{harvest.get_revenue(1)}}g
@@ -630,7 +630,7 @@
 													{{harvest.get_profit(1, 1)}}g
 												</span>
 											</td>
-											<td>{{harvest.crop.regrow && harvest.crop.regrow+' days' || ''}}</td>
+											<td class="mobile-hide">{{harvest.crop.regrow && harvest.crop.regrow+' days' || ''}}</td>
 										</tr>
 									</tbody>
 								</table>

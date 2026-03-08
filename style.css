@@ -47,112 +47,85 @@
 }
 
 
-/* --- Mobile messaging (desktop-first tool) --- */
+/* =====================================================
+   MOBILE — consolidated, single authoritative section
+   Replaces all earlier conflicting mobile blocks.
+   ===================================================== */
+
+/* Notice banner — informational only, never blocks UI */
 .mobile-warning {
   display: none;
-  padding: 10px 12px;
+  padding: 7px 14px;
   text-align: center;
-  border-bottom: 1px solid rgba(0,0,0,0.08);
-  background: rgba(255, 243, 205, 0.75);
+  background: rgba(255, 243, 205, 0.9);
   color: #5f4b00;
-  font-size: 14px;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(150, 110, 0, 0.2);
 }
-
-.rotate-hint {
-  display: none;
-  margin: 10px 0 12px;
-  padding: 10px 12px;
-  text-align: center;
-  border: 1px dashed rgba(0,0,0,0.25);
-  border-radius: 6px;
-  background: rgba(0,0,0,0.03);
-  font-size: 14px;
-}
-
-/* Show banner on small screens */
-@media (max-width: 768px) {
+@media only screen and (max-width: 767px) {
   .mobile-warning { display: block; }
 }
 
-/* On small screens in portrait, hide the calendar and show the rotate hint */
-@media (max-width: 768px) and (orientation: portrait) {
-  .calendar { display: none; }
-  .rotate-hint { display: block; }
-}
-
-
-
-/* --- Mobile landscape: keep calendar in 7 proper columns --- */
-@media (max-width: 768px) and (orientation: landscape) {
-  .calendar .day_name,
-  .calendar .day {
-    width: 14.2857% !important; /* 100 / 7 */
-    float: left !important;
-  }
-
-  .calendar .day_names,
-  .calendar .day_container {
-    width: 100% !important;
-    overflow: hidden;
+/* Portrait calendar: let cells grow with content (2-column grid) */
+@media only screen and (max-width: 767px) and (orientation: portrait) {
+  #calendar .day_container .day {
+    height: auto;
+    min-height: 100px;
+    padding-bottom: 24px; /* room for profit label at bottom */
   }
 }
 
-
-
-/* --- Mobile landscape override (undo 2-column mobile calendar) --- */
+/* Landscape calendar: restore the 7-column layout the LESS compiled in */
 @media only screen and (max-width: 767px) and (orientation: landscape) {
+  #calendar .day_names .day_name { display: block; }
   #calendar .day_names .day_name,
   #calendar .day_container .day {
     width: 14.28571429% !important;
     float: left !important;
   }
-
-  /* Undo the mobile padding that assumes 2-column layout */
   #calendar .day_container .day {
     padding-top: 4px !important;
-    height: 120px; /* slightly shorter for small screens */
+    height: 110px !important;
   }
 }
 
-
-
-/* ---------------------------
-   MOBILE ROLLBACK (Desktop-first)
-   --------------------------- */
-
-@media only screen and (max-width: 767px) and (orientation: landscape) {
-  #calendar .day_names .day_name,
-  #calendar .day_container .day {
+/* Modal: fix width overflow on phones narrower than 400px */
+@media only screen and (max-width: 600px) {
+  .modal-dialog {
+    min-width: 0 !important;
     width: auto !important;
-    float: none !important;
+    margin: 5px !important;
   }
+  .modal .modal-body  { padding: 10px 8px; }
+  .modal .modal-header,
+  .modal .modal-footer { padding: 8px 12px; }
+  .modal .modal-title  { font-size: 14px; }
 }
 
-.mobile-warning {
-  display: none;
-  padding: 10px 12px;
-  text-align: center;
-  border-bottom: 1px solid rgba(0,0,0,0.08);
-  background: rgba(255, 243, 205, 0.75);
-  color: #5f4b00;
-  font-size: 14px;
+/* Utility: hide columns in modal tables on small screens */
+@media only screen and (max-width: 767px) {
+  .mobile-hide { display: none !important; }
 }
 
-.rotate-hint {
-  display: none;
-  margin: 10px 0 12px;
-  padding: 10px 12px;
-  text-align: center;
-  border: 1px dashed rgba(0,0,0,0.25);
-  border-radius: 6px;
-  background: rgba(0,0,0,0.03);
-  font-size: 14px;
+/* Season picker: prevent profit text from overlapping name at narrow widths */
+@media only screen and (max-width: 480px) {
+  #season_picker .season .profit { display: none; }
+  #season_picker .season { height: 36px; }
+  #season_picker .season .name { font-size: 14px; margin-top: 5px; }
 }
 
-@media (max-width: 768px) {
-  .mobile-warning { display: block; }
-  .calendar { display: none; }
-  .rotate-hint { display: block; }
+/* Top menu stats: tighten up on small screens */
+@media only screen and (max-width: 767px) {
+  #top_menu .season_stats { font-size: 12px; }
+  #top_menu .season_stats .table > tbody > tr > th,
+  #top_menu .season_stats .table > tbody > tr > td { padding: 3px 4px; }
+}
+
+/* Touch targets: make interactive elements easier to tap */
+@media only screen and (max-width: 767px) {
+  .btn { min-height: 38px; }
+  #season_picker .season { min-height: 38px; }
+  .form-control { font-size: 16px; } /* prevents iOS auto-zoom on focus */
 }
 
 
