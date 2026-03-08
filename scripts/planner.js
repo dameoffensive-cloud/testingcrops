@@ -570,12 +570,20 @@ $scope.$apply();
 	
 	// Remove plans from current farm/season
 	function clear_season(season){
-		var full_update = self.cfarm().has_regrowing_crops(season);
-		for (var date = season.start; date <= season.end; date++){
-			self.cfarm().plans[date] = [];
+		var farm = self.cfarm();
+		var full_update = farm.has_regrowing_crops(season);
+		
+		if (self.in_greenhouse()){
+			for (var date = self.cyear.start; date <= self.cyear.end; date++){
+				farm.plans[date] = [];
+			}
+		} else {
+			for (var date = season.start; date <= season.end; date++){
+				farm.plans[date] = [];
+			}
 		}
 		save_data();
-		update(self.cyear, full_update);
+		update(self.cyear, true);
 	}
 	
 	// Remove plans from current farm/year
