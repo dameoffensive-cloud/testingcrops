@@ -96,6 +96,8 @@ function planner_controller($scope){
 	self.select_crop_search = select_crop_search;
 	self.crop_search_blur = crop_search_blur;
 	self.ci_sort_icon = ci_sort_icon;
+	self.best_fit_crop = best_fit_crop;
+	self.quick_plant = quick_plant;
 	
 	// Crop info search/filter settings
 	self.cinfo_settings = {
@@ -892,6 +894,67 @@ function in_greenhouse(){
 			self.crop_search_open = false;
 			$scope.$apply();
 		}, 200);
+	}
+
+	// Return the most profitable crop that can still complete its growth cycle
+	// on the given date within the current season/mode. Returns null if none fits.
+	function best_fit_crop(date){
+		if (!self.cseason || !self.crops_list.length) return null;
+
+		// Days available: from planting date to last day of current season (inclusive)
+		var days_remaining = self.cseason.end - date;
+
+		var best = null;
+		var best_profit = -Infinity;
+
+		$.each(self.crops_list, function(i, crop){
+			// Cactus Seeds: greenhouse only
+			if (crop.id === "cactus_seeds" && self.cmode !== "greenhouse") return;
+
+			// Fruit trees take 28 days and never expire — skip them for quick-planting
+			if (crop.tree) return;
+
+			// On farm, crop must be in-season
+			if (!self.in_greenhouse() && !crop.can_grow(self.cseason, true)) return;
+
+			// On farm, crop must finish growing before end of season
+			if (!self.in_greenhouse()){
+				var grow_time = crop.grow;
+				// Respect Agriculturist bonus
+				if (planner.player.agriculturist){
+					grow_time = Math.max(1, grow_time - Math.ceil(grow_time * 0.1));
+				}
+				if (grow_time > days_remaining) return;
+			}
+
+			if (crop.profit > best_profit){
+				best_profit = crop.profit;
+				best = crop;
+			}
+		});
+
+		return best;
+	}
+
+	// Instantly plant the most profitable fitting crop on a harvest day.
+	// Called from the calendar cell prompt; stopPropagation prevents the day modal opening.
+	function quick_plant(date, event){
+		if (event) event.stopPropagation();
+
+		var crop = best_fit_crop(date);
+		if (!crop) return;
+
+		// Swap in a minimal plan and add it
+		self.newplan = new Plan();
+		self.newplan.crop_id = crop.id;
+		self.newplan.crop = crop;
+		self.newplan.amount = 1;
+		// fertilizer defaults to "none" in Plan constructor
+
+		self.cyear.add_plan(self.newplan, date, false);
+		self.newplan = new Plan();
+		update(self.cyear, true);
+		save_data();
 	}
 
 	
