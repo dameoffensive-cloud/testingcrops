@@ -874,7 +874,7 @@
     {
       "id": "fiber_seeds",
       "name": "Fiber Seeds",
-      "buy": 0,
+      "buy": 2,
       "sell": 2,
       "seasons": [
         "spring",
@@ -895,7 +895,7 @@
     {
       "id": "qi_beans",
       "name": "Qi Beans",
-      "buy": 0,
+      "buy": 1,
       "sell": 1,
       "seasons": [
         "spring",
