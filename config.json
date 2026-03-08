@@ -904,10 +904,14 @@
         "winter"
       ],
       "stages": [
+        1,
+        1,
+        1,
         1
       ],
-      "note": "Dropped by monsters during 'Extended Family' special order. Grows overnight (1 day) into Qi Fruit. Used for Qi Gem exchange. Add images/seeds/qi_beans.png and images/crops/qi_beans.png.",
-      "harvest": {}
+      "note": "Dropped by monsters during 'Extended Family' special order. Grows in 4 days into Qi Fruit. Used for Qi Gem exchange. Not suggested by planner (event-only availability). Add images/seeds/qi_beans.png and images/crops/qi_beans.png.",
+      "harvest": {},
+      "no_suggest": true
     },
     {
       "buy": 2000,
