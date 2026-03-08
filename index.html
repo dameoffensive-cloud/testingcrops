@@ -500,13 +500,19 @@
 								<div class="btn btn-default" ng-click="self.add_plan(self.cdate, true)" data-toggle="tooltip" data-placement="bottom" title="Auto-replant on day of harvest"><i class="fa fa-calendar"></i> Autoplant</div>
 							</div>
 						</div>
-						<br>
+							<br>
 					</div>
 
-					<!-- Replanting suggestions: shown when this is a harvest day with no regrowables and nothing yet planted -->
+					<!-- Crop suggestions: shown on any day with no existing plans and at least one valid crop.
+					     Covers both "replanting after a harvest" and "what should I plant here?" at the start of the season.
+					     Regrowable-harvest days are suppressed — those plots are still in use. -->
 					<div class="replant-suggestions"
-						ng-show="self.calendar_harvests(self.cdate).length && !self.has_regrowth_on_day(self.cdate) && !self.calendar_plans(self.cdate).length && self.best_fit_crops(self.cdate, 3).length">
-						<div class="replant-label"><i class="fa fa-leaf"></i> Suggested replantings</div>
+						ng-show="!self.calendar_plans(self.cdate).length && !self.has_regrowth_on_day(self.cdate) && self.best_fit_crops(self.cdate, 3).length">
+						<div class="replant-label">
+							<i class="fa fa-leaf"></i>
+							<span ng-show="self.calendar_harvests(self.cdate).length">Suggested replantings</span>
+							<span ng-show="!self.calendar_harvests(self.cdate).length">Suggested crops</span>
+						</div>
 						<div class="replant-chips">
 							<div class="replant-chip"
 								ng-repeat="crop in self.best_fit_crops(self.cdate, 3)"

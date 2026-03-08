@@ -872,6 +872,44 @@
       ]
     },
     {
+      "id": "fiber_seeds",
+      "name": "Fiber Seeds",
+      "buy": 0,
+      "sell": 2,
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "stages": [
+        1,
+        2,
+        2,
+        2
+      ],
+      "wild": true,
+      "note": "Crafted (5 Mixed Seeds + 5 Fiber + 5 Sap). Grows in 7 days in any season. Yields ~1-3 Fiber. Cannot be fertilized. Add images/seeds/fiber_seeds.png and images/crops/fiber_seeds.png.",
+      "harvest": {}
+    },
+    {
+      "id": "qi_beans",
+      "name": "Qi Beans",
+      "buy": 0,
+      "sell": 1,
+      "seasons": [
+        "spring",
+        "summer",
+        "fall",
+        "winter"
+      ],
+      "stages": [
+        1
+      ],
+      "note": "Dropped by monsters during 'Extended Family' special order. Grows overnight (1 day) into Qi Fruit. Used for Qi Gem exchange. Add images/seeds/qi_beans.png and images/crops/qi_beans.png.",
+      "harvest": {}
+    },
+    {
       "buy": 2000,
       "harvest": {},
       "id": "apricot_tree",
