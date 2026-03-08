@@ -48,34 +48,164 @@
 
 
 /* =====================================================
-   MOBILE — consolidated, single authoritative section
-   Replaces all earlier conflicting mobile blocks.
+   MOBILE — single authoritative section
+   Covers: header, top menu, season picker, calendar,
+           modal, tables, form, suggestions strip.
+   Breakpoints:
+     ≤767px  = xs (phone portrait + narrow landscape)
+     ≤480px  = xs-tight (most phone portraits)
    ===================================================== */
 
-/* Notice banner — informational only, never blocks UI */
+/* --- Notice banner --- */
 .mobile-warning {
   display: none;
-  padding: 7px 14px;
+  padding: 6px 12px;
   text-align: center;
-  background: rgba(255, 243, 205, 0.9);
+  background: rgba(255, 243, 205, 0.92);
   color: #5f4b00;
-  font-size: 13px;
+  font-size: 12px;
   border-bottom: 1px solid rgba(150, 110, 0, 0.2);
 }
 @media only screen and (max-width: 767px) {
   .mobile-warning { display: block; }
 }
 
-/* Portrait calendar: let cells grow with content (2-column grid) */
-@media only screen and (max-width: 767px) and (orientation: portrait) {
-  #calendar .day_container .day {
-    height: auto;
-    min-height: 100px;
-    padding-bottom: 24px; /* room for profit label at bottom */
+/* --- Header: tighter on mobile --- */
+@media only screen and (max-width: 767px) {
+  header {
+    padding: 4px 10px 2px;
+    margin: 0;
+  }
+  header .logo { height: 32px; }
+  header .page_title {
+    font-size: 15px;
+    margin-left: 8px;
+    top: 4px;
   }
 }
 
-/* Landscape calendar: restore the 7-column layout the LESS compiled in */
+/* --- #content: remove large min-height and excess padding on mobile --- */
+@media only screen and (max-width: 767px) {
+  #content {
+    padding: 0 !important;
+    min-height: 0 !important;
+    border-left: 0;
+    border-right: 0;
+  }
+}
+
+/* --- Top menu: compact single-row on mobile --- */
+@media only screen and (max-width: 767px) {
+  #top_menu {
+    margin-top: 0;
+    padding-top: 8px;
+  }
+  #top_menu > div { margin-bottom: 8px; padding: 0 8px; }
+
+  /* Year nav, farm picker, year info all inline */
+  .year_navigation {
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .year_navigation .sn_arrows .btn { padding: 8px 10px; }
+  .year_navigation .farm_picker .btn { padding: 5px 7px; }
+  .year_navigation .year_info { flex: 1; }
+  .year_navigation .year_info .yi_name  { font-size: 15px; font-weight: 700; }
+  .year_navigation .year_info .yi_farmtype { font-size: 12px; color: #777; }
+}
+
+/* Mobile compact stat strip (shown only on xs, defined in HTML) */
+.mobile-stat-strip {
+  display: none;
+}
+@media only screen and (max-width: 767px) {
+  .mobile-stat-strip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 4px 0 2px;
+    font-size: 12px;
+    color: #444;
+    flex-wrap: wrap;
+  }
+  .mobile-stat-strip .fa {
+    color: #7a5c28;
+    margin-right: 3px;
+  }
+  .mobile-clear-btn {
+    margin-left: auto;
+    padding: 3px 8px;
+    background: #ddd;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 11px;
+    color: #555;
+  }
+  .mobile-clear-btn:active { background: #ccc; }
+}
+
+/* --- Season picker: compact pill tabs on mobile --- */
+@media only screen and (max-width: 767px) {
+  #season_picker {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #e8e0c8;
+    border-bottom: 2px solid #5E360C;
+    margin: 0;
+  }
+  #season_picker .col-xs-3 { padding: 0; }
+  #season_picker .season {
+    height: 34px !important;
+    padding: 0 4px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    bottom: 0 !important;
+    border-bottom: 0;
+    border-top: 0;
+    border-left: 1px solid #5E360C;
+    border-right: 0;
+  }
+  #season_picker .season:first-child { border-left: 0; }
+  #season_picker .season.active {
+    background-color: #f5efd0;
+    bottom: 0 !important;
+  }
+  .mobile-season-name {
+    font-size: 13px !important;
+    font-weight: 700;
+    margin: 0 !important;
+    text-transform: capitalize;
+  }
+  #season_picker .season .image {
+    display: block !important;
+    position: static !important;
+    margin: 0 4px 0 0 !important;
+    height: 18px !important;
+    border: none !important;
+  }
+}
+
+/* --- Calendar portrait: 2-column auto-height cells --- */
+@media only screen and (max-width: 767px) and (orientation: portrait) {
+  #calendar .day_container .day {
+    height: auto !important;
+    min-height: 80px;
+    padding-bottom: 28px; /* room for profit */
+  }
+  /* Crop icons slightly larger on the 2-column grid */
+  #calendar .day_container .day .planting .plan img,
+  #calendar .day_container .day .harvesting .plan img {
+    width: 22px !important;
+  }
+}
+
+/* --- Calendar landscape: restore 7-column layout --- */
 @media only screen and (max-width: 767px) and (orientation: landscape) {
   #calendar .day_names .day_name { display: block; }
   #calendar .day_names .day_name,
@@ -85,47 +215,131 @@
   }
   #calendar .day_container .day {
     padding-top: 4px !important;
-    height: 110px !important;
+    height: 105px !important;
   }
 }
 
-/* Modal: fix width overflow on phones narrower than 400px */
-@media only screen and (max-width: 600px) {
+/* --- Calendar all mobile: readable day label and profit --- */
+@media only screen and (max-width: 767px) {
+  #calendar .day_container .day .date_top .date {
+    font-size: 12px !important;
+  }
+  #calendar .day_container .day .profit,
+  #calendar .day_container .day .profit.min {
+    font-size: 10px !important;
+    bottom: 2px !important;
+    left: 4px !important;
+  }
+  /* Quick-plant prompt: slightly smaller */
+  .quick-plant-prompt {
+    font-size: 9px;
+    padding: 2px 3px;
+  }
+}
+
+/* --- Modal: full-screen on mobile --- */
+@media only screen and (max-width: 767px) {
   .modal-dialog {
     min-width: 0 !important;
     width: auto !important;
-    margin: 5px !important;
+    margin: 0 !important;
+  }
+  .modal-content {
+    border-radius: 0 !important;
+    border: none !important;
+    min-height: 100vh;
   }
   .modal .modal-body  { padding: 10px 8px; }
-  .modal .modal-header,
+  .modal .modal-header { padding: 10px 12px; }
   .modal .modal-footer { padding: 8px 12px; }
   .modal .modal-title  { font-size: 14px; }
+  .modal .close { padding: 12px; margin: -8px -8px -8px 0; }
 }
 
-/* Utility: hide columns in modal tables on small screens */
+/* --- Modal tables: card layout on mobile --- */
 @media only screen and (max-width: 767px) {
+  /* Hide the thead — labels come from data-label attributes */
+  .modal .crops thead { display: none; }
+
+  .modal .crops tbody tr {
+    display: block;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin-bottom: 8px;
+    background: #fff;
+    padding: 6px 8px;
+    position: relative;
+  }
+  .modal .crops tbody td {
+    display: inline-flex;
+    align-items: center;
+    border: none !important;
+    padding: 2px 4px;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  /* First two tds (icon + name) go full width as the card header */
+  .modal .crops tbody td:nth-child(1) {
+    padding-right: 6px;
+  }
+  .modal .crops tbody td:nth-child(2) {
+    font-weight: 600;
+    font-size: 14px;
+    flex: 1;
+  }
+  /* Action buttons (edit/delete) float right */
+  .modal .crops tbody td:last-child,
+  .modal .crops tbody td:nth-last-child(2) {
+    float: right;
+    padding: 2px 2px;
+  }
+  /* Hide lower-priority columns in card view */
   .mobile-hide { display: none !important; }
 }
 
-/* Season picker: prevent profit text from overlapping name at narrow widths */
-@media only screen and (max-width: 480px) {
-  #season_picker .season .profit { display: none; }
-  #season_picker .season { height: 36px; }
-  #season_picker .season .name { font-size: 14px; margin-top: 5px; }
+/* --- Form inputs: prevent iOS zoom, improve tap targets --- */
+@media only screen and (max-width: 767px) {
+  .modal .form-control {
+    font-size: 16px !important; /* prevents iOS auto-zoom */
+    height: 40px;
+    padding: 8px 10px;
+  }
+  .modal .btn {
+    min-height: 40px;
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+  /* Plant/Autoplant buttons: full-width stacked on mobile */
+  .plant-actions {
+    display: flex !important;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .plant-actions .btn {
+    flex: 1;
+  }
+  /* Crop search dropdown: taller items for touch */
+  .crop-search-item {
+    padding: 10px 10px !important;
+    font-size: 14px !important;
+  }
+  .crop-search-item img {
+    width: 22px !important;
+    height: 22px !important;
+  }
 }
 
-/* Top menu stats: tighten up on small screens */
+/* --- Suggestion chips: scroll horizontally on mobile --- */
 @media only screen and (max-width: 767px) {
-  #top_menu .season_stats { font-size: 12px; }
-  #top_menu .season_stats .table > tbody > tr > th,
-  #top_menu .season_stats .table > tbody > tr > td { padding: 3px 4px; }
-}
-
-/* Touch targets: make interactive elements easier to tap */
-@media only screen and (max-width: 767px) {
-  .btn { min-height: 38px; }
-  #season_picker .season { min-height: 38px; }
-  .form-control { font-size: 16px; } /* prevents iOS auto-zoom on focus */
+  .replant-chips {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .replant-chip {
+    flex-shrink: 0;
+  }
 }
 
 
