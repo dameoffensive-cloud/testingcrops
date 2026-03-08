@@ -237,3 +237,225 @@ select[disabled] {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+
+/* ============================================================
+   UX IMPROVEMENTS - appended
+   ============================================================ */
+
+
+/* --- #1 Searchable crop picker --- */
+.crop-search-wrapper {
+  position: relative;
+}
+.crop-search-wrapper input::placeholder {
+  color: #555;
+  font-style: italic;
+}
+.crop-search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+  max-height: 240px;
+  overflow-y: auto;
+  background: #f5f5f5;
+  border: 1px solid #aaa;
+  border-top: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+.crop-search-item {
+  padding: 5px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  border-bottom: 1px solid #e5e5e5;
+  transition: background-color 0.1s;
+}
+.crop-search-item:last-child { border-bottom: none; }
+.crop-search-item img { width: 24px; height: auto; image-rendering: pixelated; flex-shrink: 0; }
+.crop-search-item:hover { background-color: #e2e8f0; }
+.crop-search-selected { background-color: #dde8c8 !important; font-weight: 600; }
+.crop-group-label { margin-left: auto; font-size: 12px; opacity: 0.7; }
+.crop-search-empty { padding: 8px 10px; color: #888; font-style: italic; font-size: 13px; }
+
+
+/* --- #2 Calendar day tinting (planting / harvest / both) --- */
+#calendar .day_container .day.has-planting {
+  background-color: #cdd5e8;
+}
+#calendar .day_container .day.has-planting:hover {
+  background-color: #bdc7dc;
+}
+#calendar .day_container .day.has-harvest {
+  background-color: #c8dfc0;
+}
+#calendar .day_container .day.has-harvest:hover {
+  background-color: #b8d0b0;
+}
+#calendar .day_container .day.has-both {
+  background-color: #cddec4;
+}
+#calendar .day_container .day.has-both:hover {
+  background-color: #bdd0b5;
+}
+
+
+/* --- #3 Iridium quality bar segment --- */
+#sb_settings .farm_level .chance_scale > div.iridium {
+  background-color: #a47dc8;
+  background: linear-gradient(135deg, #d4b8f0 0%, #a87cd4 50%, #9060c0 51%, #c4a0e8 100%);
+  box-shadow: 0 0 1px 1px rgba(255,255,255,.35) inset;
+}
+#sb_settings .farm_level .chance_scale > div.iridium .name {
+  left: 0;
+}
+
+
+/* --- #4 Sort direction indicators on Crop Info headers --- */
+.sort-indicator {
+  font-size: 11px;
+  color: #5E360C;
+  font-weight: bold;
+  margin-left: 2px;
+}
+#sb_cropinfo .crops_container .crops thead th {
+  white-space: nowrap;
+  user-select: none;
+}
+#sb_cropinfo .crops_container .crops thead th:hover {
+  background-color: #e8e8e8;
+}
+
+
+/* --- #5 Location badge colour coding --- */
+.loc_badge {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  font-size: 10px;
+  line-height: 12px;
+  padding: 1px 4px;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: bold;
+}
+.loc-badge-farm     { background: rgba(94, 54, 12, 0.75); }   /* Stardew brown */
+.loc-badge-greenhouse { background: rgba(50, 130, 60, 0.80); } /* muted green */
+.loc-badge-island   { background: rgba(185, 110, 20, 0.80); } /* warm sandy orange */
+
+
+/* --- #7 Profit colour tinting on calendar days --- */
+#calendar .day_container .day .profit.profit-pos,
+#calendar .day_container .day .profit.profit-pos > div {
+  color: #2a6e1e;
+  font-weight: bold;
+}
+#calendar .day_container .day .profit.profit-neg,
+#calendar .day_container .day .profit.profit-neg > div {
+  color: #8b1a1a;
+}
+
+
+/* --- #8 Profit tinting on season tabs --- */
+#season_picker .season .profit-pos { color: #2a6e1e; font-weight: bold; }
+#season_picker .season .profit-neg { color: #8b1a1a; }
+
+
+/* --- #9 "More…" styled as a subtle link --- */
+#calendar .day_container .day .more a {
+  color: #5E360C;
+  opacity: 0.75;
+  font-size: 12px;
+  font-style: italic;
+  text-decoration: underline dotted;
+  cursor: pointer;
+}
+#calendar .day_container .day .more a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+
+/* --- #10 Legacy section in Settings --- */
+.legacy-section {
+  margin-top: 4px;
+}
+.legacy-toggle {
+  cursor: pointer;
+  color: #666;
+  font-size: 13px;
+  padding: 4px 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px dashed #bbb;
+  user-select: none;
+  transition: color 0.15s;
+}
+.legacy-toggle:hover { color: #333; }
+.legacy-toggle .fa { font-size: 12px; }
+
+
+/* --- #11 Empty state styling in modal --- */
+.empty-state {
+  font-style: italic;
+  opacity: 0.75;
+  padding: 4px 0;
+}
+
+
+/* --- #12 FBP inline tooltip --- */
+.fbp-help {
+  cursor: help;
+  border-bottom: 1px dotted #888;
+  color: #555;
+}
+
+
+/* --- #6 Keyboard hints in Settings --- */
+.keyboard-hints {
+  background: rgba(0,0,0,0.04);
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: #555;
+}
+.keyboard-hints .hint-title {
+  font-weight: bold;
+  color: #444;
+  margin-bottom: 5px;
+}
+.keyboard-hints .hint-row {
+  margin: 3px 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.keyboard-hints kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  font-size: 11px;
+  font-family: monospace;
+  background: #fff;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.15);
+  color: #333;
+}
+
+
+/* --- #13 Mobile sticky season picker --- */
+@media only screen and (max-width: 767px) {
+  #season_picker {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background-color: #eee;
+  }
+}
+
