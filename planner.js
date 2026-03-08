@@ -959,7 +959,7 @@ function in_greenhouse(){
 			}
 
 			// The crop must finish growing on or before its deadline
-			if (date + grow_time - 1 > deadline) return;
+			if (date + grow_time > deadline) return;
 
 			if (crop.profit > best_profit){
 				best_profit = crop.profit;
@@ -990,7 +990,7 @@ function in_greenhouse(){
 			if (planner.player.agriculturist){
 				grow_time = Math.max(1, grow_time - Math.ceil(grow_time * 0.1));
 			}
-			if (date + grow_time - 1 > deadline) return;
+			if (date + grow_time > deadline) return;
 
 			candidates.push(crop);
 		});
