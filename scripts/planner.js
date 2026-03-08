@@ -98,6 +98,7 @@ function planner_controller($scope){
 	self.ci_sort_icon = ci_sort_icon;
 	self.best_fit_crop = best_fit_crop;
 	self.quick_plant = quick_plant;
+	self.has_regrowth_on_day = has_regrowth_on_day;
 	
 	// Crop info search/filter settings
 	self.cinfo_settings = {
@@ -902,13 +903,24 @@ function in_greenhouse(){
 		}, 200);
 	}
 
-	// Return the most profitable crop that can still complete its growth cycle
-	// on the given date within the current season/mode. Returns null if none fits.
+	// Returns true if any harvest on the given date comes from a crop that regrows —
+	// meaning the plot is still actively producing and needs no new planting suggestion.
+	function has_regrowth_on_day(date){
+		var harvests = self.calendar_harvests(date);
+		for (var i = 0; i < harvests.length; i++){
+			if (harvests[i].crop && harvests[i].crop.regrow) return true;
+		}
+		return false;
+	}
+
+	// Return the most profitable non-regrowable crop that can complete its full growth cycle
+	// when planted on the given date. Uses crop.end (not season.end) as the deadline so that
+	// cross-season crops like Wheat (Summer+Fall) are correctly included when planted late in
+	// their first season. Regrowable crops are always excluded — suggesting one that won't
+	// regrow before season end is misleading, and suggesting one "over" a regrowable harvest
+	// makes no sense.
 	function best_fit_crop(date){
 		if (!self.cseason || !self.crops_list.length) return null;
-
-		// Days available: from planting date to last day of current season (inclusive)
-		var days_remaining = self.cseason.end - date;
 
 		var best = null;
 		var best_profit = -Infinity;
@@ -917,21 +929,31 @@ function in_greenhouse(){
 			// Cactus Seeds: greenhouse only
 			if (crop.id === "cactus_seeds" && self.cmode !== "greenhouse") return;
 
-			// Fruit trees take 28 days and never expire — skip them for quick-planting
+			// Fruit trees: skip (28-day commitment, wrong tool for this)
 			if (crop.tree) return;
 
-			// On farm, crop must be in-season
+			// Regrowable crops: excluded — they won't meaningfully regrow before season end
+			// when planted on a late day, and suggesting them over an existing regrowable
+			// harvest is confusing (see: Corn, Coffee, Ancient Fruit, etc.)
+			if (crop.regrow) return;
+
+			// On farm, crop must be plantable in the current season or span into it
+			// (can_grow with is_season=true already passes cross-season crops correctly)
 			if (!self.in_greenhouse() && !crop.can_grow(self.cseason, true)) return;
 
-			// On farm, crop must finish growing before end of season
-			if (!self.in_greenhouse()){
-				var grow_time = crop.grow;
-				// Respect Agriculturist bonus
-				if (planner.player.agriculturist){
-					grow_time = Math.max(1, grow_time - Math.ceil(grow_time * 0.1));
-				}
-				if (grow_time > days_remaining) return;
+			// Deadline: last day the crop's seasons cover.
+			// This is season.end for single-season crops, and naturally extends to the
+			// following season's end for cross-season crops (e.g. Wheat: Summer+Fall → day 84).
+			// Greenhouse has no season expiry.
+			var deadline = self.in_greenhouse() ? (YEAR_DAYS * 10) : crop.end;
+
+			var grow_time = crop.grow;
+			if (planner.player.agriculturist){
+				grow_time = Math.max(1, grow_time - Math.ceil(grow_time * 0.1));
 			}
+
+			// The crop must finish growing on or before its deadline
+			if (date + grow_time - 1 > deadline) return;
 
 			if (crop.profit > best_profit){
 				best_profit = crop.profit;
