@@ -570,8 +570,20 @@ $scope.$apply();
 	
 	// Remove plans from current farm/season
 	function clear_season(season){
+		// In All Farms view, clear the visible season from both farm and greenhouse buckets.
+		// In greenhouse-only view, clear the entire greenhouse year because greenhouse has no seasons.
+		if (self.cview == "all") {
+			for (var date = season.start; date <= season.end; date++){
+				self.cyear.data.farm.plans[date] = [];
+				self.cyear.data.greenhouse.plans[date] = [];
+			}
+			save_data();
+			update(self.cyear.data.farm, true);
+			update(self.cyear.data.greenhouse, true);
+			return;
+		}
+
 		var farm = self.cfarm();
-		var full_update = farm.has_regrowing_crops(season);
 		
 		if (self.in_greenhouse()){
 			for (var date = self.cyear.start; date <= self.cyear.end; date++){
@@ -588,6 +600,20 @@ $scope.$apply();
 	
 	// Remove plans from current farm/year
 	function clear_year(year){
+		// In All Farms view, users expect this to clear both main farm and greenhouse/island data.
+		if (self.cview == "all") {
+			$.each(year.data.farm.plans, function(date, plans){
+				year.data.farm.plans[date] = [];
+			});
+			$.each(year.data.greenhouse.plans, function(date, plans){
+				year.data.greenhouse.plans[date] = [];
+			});
+			save_data();
+			update(year.data.farm, true);
+			update(year.data.greenhouse, true);
+			return;
+		}
+
 		var farm = year.farm();
 		var full_update = farm.has_regrowing_crops();
 		$.each(farm.plans, function(date, plans){
