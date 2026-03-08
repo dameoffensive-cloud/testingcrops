@@ -93,6 +93,9 @@ function planner_controller($scope){
 	self.ci_set_sort = ci_set_sort;		// Set key to sort crop info by
 	self.planner_valid_crops = planner_valid_crops;
 	self.on_crop_change = on_crop_change;
+	self.select_crop_search = select_crop_search;
+	self.crop_search_blur = crop_search_blur;
+	self.ci_sort_icon = ci_sort_icon;
 	
 	// Crop info search/filter settings
 	self.cinfo_settings = {
@@ -105,6 +108,13 @@ function planner_controller($scope){
 		order: false,
 		use_fbp: false,
 	};
+
+	// Crop search state (for the searchable modal picker)
+	self.crop_search_text = "";
+	self.crop_search_open = false;
+
+	// Legacy section toggle (Settings sidebar)
+	self.show_legacy = false;
 	
 	
 	/********************************
@@ -570,19 +580,16 @@ $scope.$apply();
 	
 	// Remove plans from current farm/season
 	function clear_season(season){
-		// In All Farms view, the main farm is seasonal but greenhouse/island are not.
-		// So clear the selected season on the main farm AND wipe the entire greenhouse/island year.
+		// In All Farms view, clear the visible season from both farm and greenhouse buckets.
+		// In greenhouse-only view, clear the entire greenhouse year because greenhouse has no seasons.
 		if (self.cview == "all") {
 			for (var date = season.start; date <= season.end; date++){
 				self.cyear.data.farm.plans[date] = [];
-			}
-			for (var gdate = self.cyear.start; gdate <= self.cyear.end; gdate++){
-				self.cyear.data.greenhouse.plans[gdate] = [];
+				self.cyear.data.greenhouse.plans[date] = [];
 			}
 			save_data();
 			update(self.cyear.data.farm, true);
 			update(self.cyear.data.greenhouse, true);
-			try { $scope.$applyAsync(); } catch (e) {}
 			return;
 		}
 
@@ -614,7 +621,6 @@ $scope.$apply();
 			save_data();
 			update(year.data.farm, true);
 			update(year.data.greenhouse, true);
-			try { $scope.$applyAsync(); } catch (e) {}
 			return;
 		}
 
@@ -638,6 +644,8 @@ $scope.$apply();
 	
 	// Open crop planner modal
 	function open_plans(date){
+		self.crop_search_text = "";
+		self.crop_search_open = false;
 		self.planner_modal.modal();
 		self.cdate = date;
 	}
@@ -837,7 +845,13 @@ function in_greenhouse(){
 			self.cinfo_settings.order = false;
 		}
 	}
-	
+
+	// Return a sort direction indicator for a given column key
+	function ci_sort_icon(key){
+		if (self.cinfo_settings.sort !== key) return '';
+		return self.cinfo_settings.order ? ' ↑' : ' ↓';
+	}
+
 	// Filter crops that can be planted in the planner's drop down list
 	function planner_valid_crops(crop){
 		// Restrict special cases
@@ -862,6 +876,22 @@ function in_greenhouse(){
 			// Trees cannot use fertilizer in-game, force None and disable UI.
 			self.newplan.fertilizer = self.fertilizer["none"];
 		}
+	}
+
+	// Select a crop from the searchable picker in the planting modal
+	function select_crop_search(crop){
+		self.newplan.crop_id = crop.id;
+		self.crop_search_text = "";
+		self.crop_search_open = false;
+		self.on_crop_change();
+	}
+
+	// Close the crop search dropdown after a short delay (allows clicks to register first)
+	function crop_search_blur(){
+		setTimeout(function(){
+			self.crop_search_open = false;
+			$scope.$apply();
+		}, 200);
 	}
 
 	
@@ -1076,6 +1106,7 @@ function in_greenhouse(){
 		self.save = save;
 		self.toggle_perk = toggle_perk;
 		self.quality_chance = quality_chance;
+		self.quality_chance_display = quality_chance_display;
 		
 		// Miscellaneous client settings
 		self.settings = {
@@ -1146,6 +1177,33 @@ function in_greenhouse(){
 					break;
 			}
 			
+			if (locale) return Math.round(chance * 100);
+			return chance;
+		}
+
+		// Display-only quality chance split for the visual bar (splits gold into gold + iridium)
+		// Adds iridium tier (approx. gold_chance * 0.5) without affecting profit calculations.
+		function quality_chance_display(quality, mult, locale){
+			mult = mult || 0;
+			var gold_chance = 0.2 * (self.level / 10) + 0.2 * mult * ((self.level + 2) / 12) + 0.01;
+			var silver_chance = Math.min(0.75, gold_chance * 2);
+			var iridium_chance = gold_chance * 0.5;
+
+			var chance = 0;
+			switch (quality){
+				case 0: // Regular only
+					chance = Math.max(0, 1 - (gold_chance + silver_chance));
+					break;
+				case 1: // Silver-or-better (visually the silver band)
+					chance = Math.min(1, silver_chance);
+					break;
+				case 2: // Gold only (excludes iridium portion)
+					chance = Math.max(0, gold_chance - iridium_chance);
+					break;
+				case 3: // Iridium
+					chance = Math.max(0, iridium_chance);
+					break;
+			}
 			if (locale) return Math.round(chance * 100);
 			return chance;
 		}
