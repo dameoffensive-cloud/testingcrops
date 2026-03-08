@@ -736,8 +736,14 @@ $scope.$apply();
 		var fin = new Finance;
 		var a = (self.cyear.data.farm && self.cyear.data.farm.totals && self.cyear.data.farm.totals.day && self.cyear.data.farm.totals.day[date]) ? self.cyear.data.farm.totals.day[date] : null;
 		var b = (self.cyear.data.greenhouse && self.cyear.data.greenhouse.totals && self.cyear.data.greenhouse.totals.day && self.cyear.data.greenhouse.totals.day[date]) ? self.cyear.data.greenhouse.totals.day[date] : null;
-		fin.profit.min = (a ? a.profit.min : 0) + (b ? b.profit.min : 0);
-		fin.profit.max = (a ? a.profit.max : 0) + (b ? b.profit.max : 0);
+
+		// Filter totals to match the active location view so greenhouse/island
+		// views don't bleed farm profit (and vice-versa) when the other location is empty.
+		var include_farm       = (self.cview === "all" || self.cview === "farm");
+		var include_greenhouse = (self.cview === "all" || self.cview === "greenhouse" || self.cview === "island");
+
+		fin.profit.min = (include_farm && a ? a.profit.min : 0) + (include_greenhouse && b ? b.profit.min : 0);
+		fin.profit.max = (include_farm && a ? a.profit.max : 0) + (include_greenhouse && b ? b.profit.max : 0);
 		return fin;
 	}
 
