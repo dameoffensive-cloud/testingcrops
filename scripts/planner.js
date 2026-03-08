@@ -972,12 +972,37 @@ function in_greenhouse(){
 		var crop = best_fit_crop(date);
 		if (!crop) return;
 
-		// Swap in a minimal plan and add it
+		// Inherit the best fertilizer from the crops being harvested today.
+		// In Stardew, fertilizer stays in the soil after harvest, so the next crop on that
+		// plot starts with it already applied. We rank: deluxe > quality > basic >
+		// hyper_speed > deluxe_speed > speed_gro > none, and pick the highest available.
+		var fert_rank = {
+			"deluxe_fertilizer": 6,
+			"quality_fertilizer": 5,
+			"basic_fertilizer":   4,
+			"hyper_speed_gro":    3,
+			"deluxe_speed_gro":   2,
+			"speed_gro":          1,
+			"none":               0
+		};
+		var inherited_fert = self.fertilizer["none"];
+		var best_rank = 0;
+		$.each(self.calendar_harvests(date), function(i, harvest){
+			var f = harvest.plan && harvest.plan.fertilizer;
+			if (!f || f.is_none()) return;
+			var rank = fert_rank[f.id] || 0;
+			if (rank > best_rank){
+				best_rank = rank;
+				inherited_fert = f;
+			}
+		});
+
+		// Build and add the plan
 		self.newplan = new Plan();
 		self.newplan.crop_id = crop.id;
 		self.newplan.crop = crop;
 		self.newplan.amount = 1;
-		// fertilizer defaults to "none" in Plan constructor
+		self.newplan.fertilizer = inherited_fert;
 
 		self.cyear.add_plan(self.newplan, date, false);
 		self.newplan = new Plan();
