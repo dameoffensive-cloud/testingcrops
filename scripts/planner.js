@@ -730,7 +730,7 @@ $scope.$apply();
 		var all = a.concat(b);
 		if (self.cview == "all") return all;
 		return all.filter(function(h){
-			var loc = h.location || "farm";
+			var loc = (h.plan && h.plan.location) ? h.plan.location : "farm";
 			return loc == self.cview;
 		});
 	}
