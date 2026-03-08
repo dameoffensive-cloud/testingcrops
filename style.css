@@ -296,11 +296,12 @@ select[disabled] {
 #calendar .day_container .day.has-harvest:hover {
   background-color: #b8d0b0;
 }
+/* has-both: left half = harvest green, right half = planting blue */
 #calendar .day_container .day.has-both {
-  background-color: #cddec4;
+  background: linear-gradient(to right, #c8dfc0 50%, #cdd5e8 50%);
 }
 #calendar .day_container .day.has-both:hover {
-  background-color: #bdd0b5;
+  background: linear-gradient(to right, #b8d0b0 50%, #bdc7dc 50%);
 }
 
 
@@ -459,3 +460,43 @@ select[disabled] {
   }
 }
 
+
+
+/* --- Quick-plant prompt on harvest-day calendar cells --- */
+.quick-plant-prompt {
+  position: absolute;
+  bottom: 3px;
+  left: 4px;
+  right: 4px;
+  background: rgba(60, 100, 50, 0.82);
+  color: #e8f5e0;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.1;
+  padding: 2px 5px 3px;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.15s, color 0.15s;
+  z-index: 2;
+  letter-spacing: 0.01em;
+}
+.quick-plant-prompt:hover {
+  background: rgba(40, 80, 30, 0.92);
+  color: #fff;
+}
+.quick-plant-prompt .fa {
+  font-size: 9px;
+  margin-right: 2px;
+  opacity: 0.85;
+}
+
+/* On small screens keep it readable */
+@media only screen and (max-width: 991px) {
+  .quick-plant-prompt {
+    font-size: 9px;
+    padding: 2px 3px;
+  }
+}

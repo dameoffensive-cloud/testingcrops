@@ -193,6 +193,14 @@
 								<div>{{self.calendar_totals_day(date).profit.max>0 && '+' || ''}}{{self.calendar_totals_day(date).get_profit(1, 1)}}g</div>
 							</div>
 						</div>
+
+						<!-- Quick-plant prompt: only on harvest-only days with a valid crop -->
+						<div class="quick-plant-prompt"
+							ng-show="self.calendar_harvests(date).length && !self.calendar_plans(date).length && self.best_fit_crop(date)"
+							ng-click="self.quick_plant(date, $event)"
+							title="Plant {{self.best_fit_crop(date) && self.best_fit_crop(date).name}} — best profit for remaining days">
+							<i class="fa fa-leaf"></i> {{self.best_fit_crop(date) && self.best_fit_crop(date).name}}
+						</div>
 					</div>
 				</div>
 			</div>
